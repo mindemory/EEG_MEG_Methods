@@ -72,8 +72,10 @@ MNE is a Python package for processing and analyzing MEG and EEG data.
     ```
 4. Install MNE and other necessary packages:
     ```bash
-    conda install mne matplotlib seaborn pandas scikit-learn numpy
+    conda install matplotlib seaborn pandas scikit-learn numpy
     conda install conda-forge::nibabel nilearn
+    pip install mne
+    pip install PyQt5
     ```
 
 ### 4. (Optional) Install Jupyter Notebook, not needed if you will use VSCode.
