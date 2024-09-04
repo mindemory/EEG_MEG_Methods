@@ -40,8 +40,7 @@ cfg                 = [];
 cfg.dataset         = eegPath;
 % Add electrode positions
 cfg.elec            = elec;
-% Try loading data using ft_preprocessing
-data                = ...
+data                = ft_preprocessing(cfg);
 
 %% Plot EEG data (single channel plotting)
 % Let us try plotting an EEG channel using default MATLAB plot function
@@ -50,8 +49,8 @@ chToPlot = 10; % Channel to plot
 timeToPlot = 5; % Time to plot in seconds
 samplesToPlot = timeToPlot * data.fsample;
 figure();
-% Try plotting the channel using MATLAB plot function
-...
+plot(data.time{1}(1:samplesToPlot), ...
+    data.trial{1}(chToPlot, 1:samplesToPlot))
 xlabel('Time (s)');
 ylabel('Amplitude (uV)');
 title('EEG Channel 1');
@@ -63,8 +62,7 @@ title('EEG Channel 1');
 % This is useful for exploring the data, checking for any artifacts, finding bad channels, or sections of recordings that need to be removed
 cfg                 = [];
 cfg.viewmode        = 'vertical';
-% Use ft_databrowser to visualize data
-...
+ft_databrowser(cfg, data);
 
 %% Visualizing Montage of electrodes
 % The EEG data is recorded using multiple electrodes placed on the scalp.
@@ -72,12 +70,11 @@ cfg.viewmode        = 'vertical';
 % The montage can be visualized using ft_plot_sens
 % But let us try visualizing the montage as a 3D plot usint MATLAB's plot3 function
 figure();
-% Try plotting the electrodes using plot3 function
-...
+plot3(data.elec.elecpos(:, 1), data.elec.elecpos(:, 2), data.elec.elecpos(:, 3), 'bo', 'MarkerFaceColor','b');
 hold on;
 text(data.elec.elecpos(:, 1), data.elec.elecpos(:, 2), data.elec.elecpos(:, 3), data.elec.label, 'FontSize', 8);
 
-% See if you can also add fiducials to the plot
+plot3(fiducialsTable.x, fiducialsTable.y, fiducialsTable.z, 'ro', 'MarkerFaceColor', 'r');
 xlabel('X');
 ylabel('Y');
 zlabel('Z');
@@ -90,14 +87,15 @@ view(180, 0)
 % Here we are going to re-reference the data using the average reference and the mastoids as reference electrodes
 % The average refernce is calculated by taking the average of all the electrodes
 dataRerefAvg           = data;
-dataRerefAvg.trial{1}  = ...
+dataRerefAvg.trial{1}  = data.trial{1} - mean(data.trial{1}, 1);
 
 
 % We can also reference data using a specific channel as reference
 % Here we are going to use the mastoids as reference
 mastoidIdx            = find(ismember(data.label, 'TP9') | ismember(data.label, 'TP10'));
 dataRerefMastoids     = data;
-dataRerefMastoids.trial{1} = ...
+dataRerefMastoids.trial{1} = dataRerefMastoids.trial{1} - (dataRerefMastoids.trial{1}(mastoidIdx(1), :) + ...
+                                                           dataRerefMastoids.trial{1}(mastoidIdx(2), :))/2;
 
 % Plot the data before and after re-referencing
 figure();
