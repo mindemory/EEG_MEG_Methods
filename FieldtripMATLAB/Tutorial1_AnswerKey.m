@@ -3,6 +3,11 @@ clear; close all; clc;
 % Initialize Fieldtrip
 addpath('/Users/mrugankdake/Documents/MATLAB/fieldtrip-20220104');
 ft_defaults;
+addpath('/Users/mrugankdake/Documents/MATLAB/fieldtrip-20220104/external/freesurfer') 
+addpath('/Users/mrugankdake/Documents/MATLAB/fieldtrip-20220104/external/spm12') 
+
+% addpath([toolpth_ filesep 'fieldtrip' filesep 'external' ...
+%     filesep 'spm12']);
 
 %% Load sample dataset
 % For EEG dataset, we will use CHB-MIT Scalp EEG Dataset from here: 
@@ -123,3 +128,68 @@ plot(dataRerefMastoids.time{1}(1:samplesToPlot), ...
 xlabel('Time (s)');
 ylabel('Amplitude (uV)');
 title(['EEG Channel ' num2str(chToPlot) ' - Mastoids Reference']);
+
+
+%% Load MEG data
+% Path to MEG file
+megPath              = '../../Datasets/MEG/Subject01/Subject01.ds';
+
+% Load the MEG file using Fieldtrip
+cfg                 = [];
+cfg.dataset         = megPath;
+megData             = ft_preprocessing(cfg);
+
+% Extract the channel positions and the coil positions
+% The channel positions refer to the location of the physical sensors in
+% MEG
+% And the coil positions are the locations of the gradiometers in the MEG
+% setup
+chanpos             = megData.grad.chanpos; % Channel positions
+coilpos             = megData.grad.coilpos; % Coil positions
+
+figure;
+hold on;
+plot3(chanpos(:,1), chanpos(:,2), chanpos(:,3), 'bo', 'MarkerSize', 8, 'DisplayName', 'Channels');
+plot3(coilpos(:,1), coilpos(:,2), coilpos(:,3), 'ro', 'MarkerSize', 4, 'DisplayName', 'Coils');
+xlabel('X'); ylabel('Y'); zlabel('Z');
+title('Visualization of Channel and Coil Positions');
+legend;
+view(3);
+axis equal;
+grid on;
+
+
+% We can also visualize these channels with respect to the subject head if
+% we have the anatomicals of the subject.
+% Load and segment MRI (anatomical)
+mriPath              = '../../Datasets/MEG/Subject01/Subject01.mri';
+mri                  = ft_read_mri(mriPath);
+
+output_nii_path = '../../Datasets/MEG/Subject01/Subject01.nii';  % Define the output NIfTI file name
+ft_write_mri(output_nii_path, mri, 'dataformat', 'nifti');
+
+% Visualize MRI 
+cfg                  = [];
+cfg.method           = 'ortho';
+cfg.interactive      = 'yes';
+ft_sourceplot(cfg, mri);
+
+% First we segment the anatomical to identify different layers
+segmentedmri         = ft_volumesegment([], mri);
+% add anatomical information to the segmentation
+segmentedmri.transform = mri.transform;
+segmentedmri.anatomy   = mri.anatomy;
+
+% Next we construct a headmodel using the segmented MRI
+cfg        = [];
+cfg.method = 'singleshell';
+hdm        = ft_prepare_headmodel(cfg, segmentedmri);
+% Convert the units to the units present in megData.grad
+hdm        = ft_convert_units(hdm, 'cm');
+
+% Now we can visualize the mesh of subject head along with grad
+figure;
+ft_plot_mesh(hdm.bnd,'facecolor','none'); 
+hold on;
+ft_plot_sens(megData.grad, 'facecolor', [0 1 0], 'edgecolor', [1 0 0]);
+view([0 0]);
