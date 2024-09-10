@@ -13,7 +13,7 @@
 % the following arguments are general
 
 function [timingData, taskNames] = semanticAud(seq, listReg, listOdd, listOddEx, dateString, ...
-    screen, allCoords, lineWidthPix, audioDevice, taskNames)
+    screen, allCoords, lineWidthPix, audioDevice, taskNames, devType)
 
 window = screen.win;
 white = screen.white;
@@ -79,8 +79,16 @@ WaitSecs(2);
 timingData = struct();
 
 % -----------------!!!send trigger for starting!!!-----------------
+if strcmp(devType, 'EEG')
+    write(port, 4,"uint8");
+elseif strcmp(devType, 'MEG')
+    % Fix this
+    PTBSendTrigger(4,0);
+else
+    Beeper(2000)
+end
 % write(port, 4,"uint8");
-Beeper(2000)
+% Beeper(2000)
 
 % Record the start time of the experiment
 startTime = GetSecs();
@@ -123,8 +131,16 @@ for i = 1:size(finalSequence, 1)
     offsetTime = offsetTime - startTime;
 
     % -----------------!!!send trigger for ending!!!-----------------
+    if strcmp(devType, 'EEG')
+        write(port, current_code,"uint8");
+    elseif strcmp(devType, 'MEG')
+        % Fix this
+        PTBSendTrigger(current_code,0);
+    else
+        Beeper(2000)
+    end
     % write(port, current_code,"uint8");
-    Beeper(2000)
+%     Beeper(2000)
 
     % store
     timingData(i).stiType = stiType;

@@ -17,7 +17,7 @@
 %     dateString, window, white, allCoords, lineWidthPix, xCenter, yCenter, taskNames, pl)
 
 function [timingData,taskNames] = classicalAud(seq, listReg, listOdd, listOddEx, ...
-    dateString, screen, allCoords, lineWidthPix, taskNames, pl)
+    dateString, screen, allCoords, lineWidthPix, taskNames, pl, devType)
 window = screen.win;
 white = screen.white;
 xCenter = screen.xCenter;
@@ -88,8 +88,13 @@ timingData = struct();
 WaitSecs(2);
 
 % -----------------!!!send trigger for starting!!!-----------------
-% write(port, 1,"uint8");
-Beeper(2000)
+if strcmp(devType, 'EEG')
+    write(port, 1,"uint8");
+elseif strcmp(devType, 'MEG')
+    PTBSendTrigger(1,0);
+else
+    Beeper(2000)
+end
 
 % Record the start time of the experiment
 startTime = GetSecs();
@@ -103,7 +108,7 @@ for i = 1:size(finalSequence, 1)
 
     if strcmp(stiType, 'A')
         current_code = 64;
-        Beeper(regFreq,[],0.45);
+        Beeper(regFreq,0.6,0.45);
     else
         if rand() < 0.5
             oddFreqPresent = oddFreq;
@@ -111,12 +116,19 @@ for i = 1:size(finalSequence, 1)
             oddFreqPresent = oddExFreq;
         end
         current_code = 128;
-        Beeper(oddFreqPresent,[],0.45);
+        Beeper(oddFreqPresent,0.6,0.45);
     end
 
     offsetTime = GetSecs() - startTime;
 
     % -----------------!!!send trigger for ending!!!-----------------
+    if strcmp(devType, 'EEG')
+        write(port, current_code,"uint8");
+    elseif strcmp(devType, 'MEG')
+        PTBSendTrigger(current_code,0);
+    else
+        Beeper(2000)
+    end
     % write(port, current_code,"uint8");
     % Beeper(2000)
     disp(stiName)

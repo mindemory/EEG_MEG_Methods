@@ -15,6 +15,14 @@ if strcmp(hostname, 'mindemory.local')
     Screen('Preference', 'SkipSyncTests', 1)
     PsychDefaultSetup(2);
     parameters.viewingDistance = 55;
+    devType = 'neither';
+elseif strcmp(hostname, 'meg-stim-mac.psych.nyu.edu')
+    addpath(genpath('/Applications/Psychtoolbox'))
+    parameters.isDemoMode = true;
+    Screen('Preference', 'SkipSyncTests', 1)
+    PsychDefaultSetup(2);
+    parameters.viewingDistance = 25; % check once
+    devType = 'MEG';
 end
 stimDir = '../stimulus';
 screen = initScreen(parameters);
@@ -53,7 +61,7 @@ screen = initScreen(parameters);
 
 % story
 % start = 8
-% onset = 64, offset = 128
+% onset = 16, offset = 32
 %-----------trigger code----------------------------
 
 % get the date of the experiment to add to file name later
@@ -247,6 +255,13 @@ Screen('Flip', screen.win);
 
 KbStrokeWait;
 
+
+%------------test-----------------------
+% timingData = struct();
+% [timingData, taskNames] = semanticAud(sequence, toolsListA, bodyPartsListA, animalsListA, date, ...
+%             screen, allCoords, lineWidthPix, audioDevice, taskNames, devType);
+%         
+% sca;
 %-------------------Section I---------------------------------------
 
 % generate order of tasks which returns e.g. [3 1 2]
@@ -269,13 +284,13 @@ for i = 1:length(tasks)
 
     if taskIndex == 1
         [timingDataAll{i}, taskNames] = task(sequence, listHi, listMe, listLo, date, ...
-            screen, allCoords, lineWidthPix, taskNames, 1);
+            screen, allCoords, lineWidthPix, taskNames, 1, devType);
     elseif taskIndex == 2
         [timingDataAll{i}, taskNames] = task(sequence, animalsListV, toolsListV, bodyPartsListV, date, ...
-            screen, allCoords, lineWidthPix, taskNames);
+            screen, allCoords, lineWidthPix, taskNames, devType);
     elseif taskIndex == 3
         [timingDataAll{i}, taskNames] = task(sequence, toolsListA, bodyPartsListA, animalsListA, date, ...
-            screen, allCoords, lineWidthPix, audioDevice, taskNames);
+            screen, allCoords, lineWidthPix, audioDevice, taskNames, devType);
     end
 
 end
@@ -320,9 +335,15 @@ Screen('DrawLines', screen.win, allCoords, lineWidthPix, screen.white, [screen.x
 Screen('Flip', screen.win);
 
 %--! send trigger ! --
-
+if strcmp(devType, 'EEG')
+    write(port, 8,"uint8");
+elseif strcmp(devType, 'MEG')
+    PTBSendTrigger(8,0);
+else
+    Beeper(2000)
+end
 % write(port, 8,"uint8");
-Beeper(2000);
+% Beeper(2000);
 
 %--! send trigger ! --
 
@@ -341,7 +362,7 @@ for i = 1:numel(storySeq)
     audioData = storyData.(event);
 
     PsychPortAudio('FillBuffer', audioDevice, audioData');
-
+    
     % write(port, current_code,"uint8");
 
     % Start audio and record onset time
@@ -349,9 +370,16 @@ for i = 1:numel(storySeq)
 
 
     %--! send trigger ! --
+    if strcmp(devType, 'EEG')
+        write(port, 16,"uint8");
+    elseif strcmp(devType, 'MEG')
+        PTBSendTrigger(16,0);
+    else
+        Beeper(2000)
+    end
 
     % write(port, 64,"uint8");
-    Beeper(2000);
+%     Beeper(2000);
 
     %--! send trigger ! --
 
@@ -363,9 +391,15 @@ for i = 1:numel(storySeq)
     offsetTime = GetSecs();
 
     %--! send trigger ! --
-
+    if strcmp(devType, 'EEG')
+        write(port, 32,"uint8");
+    elseif strcmp(devType, 'MEG')
+        PTBSendTrigger(32,0);
+    else
+        Beeper(2000)
+    end
     % write(port, 128,"uint8");
-    Beeper(2000);
+%     Beeper(2000);
 
     %--! send trigger ! --
 
@@ -428,13 +462,13 @@ for i = 1:length(tasks)
 
     if taskIndex == 1
         [timingDataAll{i}, taskNames] = task(sequence, listMe, listLo, listHi, date, ...
-            screen, allCoords, lineWidthPix, taskNames, 1);
+            screen, allCoords, lineWidthPix, taskNames, 1, devType);
     elseif taskIndex == 2
         [timingDataAll{i}, taskNames] = task(sequence, toolsListV, animalsListV, bodyPartsListV, date, ...
-            screen, allCoords, lineWidthPix, taskNames);
+            screen, allCoords, lineWidthPix, taskNames, devType);
     elseif taskIndex == 3
         [timingDataAll{i}, taskNames] = task(sequence, bodyPartsListA, animalsListA, toolsListA, date, ...
-            screen, allCoords, lineWidthPix, audioDevice, taskNames);
+            screen, allCoords, lineWidthPix, audioDevice, taskNames, devType);
     end
 
 end
@@ -477,9 +511,15 @@ Screen('DrawLines', screen.win, allCoords, lineWidthPix, screen.white, [screen.x
 Screen('Flip', screen.win);
 
 %--! send trigger ! --
-
+if strcmp(devType, 'EEG')
+    write(port, 8,"uint8");
+elseif strcmp(devType, 'MEG')
+    PTBSendTrigger(8,0);
+else
+    Beeper(2000)
+end
 % write(port, 8,"uint8");
-Beeper(2000);
+% Beeper(2000);
 
 %--! send trigger ! --
 
@@ -506,9 +546,15 @@ for i = 1:numel(storySeq)
 
 
     %--! send trigger ! --
-
+    if strcmp(devType, 'EEG')
+        write(port, 16,"uint8");
+    elseif strcmp(devType, 'MEG')
+        PTBSendTrigger(16,0);
+    else
+        Beeper(2000)
+    end
     % write(port, 64,"uint8");
-    Beeper(2000);
+%     Beeper(2000);
 
     %--! send trigger ! --
 
@@ -520,9 +566,16 @@ for i = 1:numel(storySeq)
     offsetTime = GetSecs();
 
     %--! send trigger ! --
-
+    if strcmp(devType, 'EEG')
+        write(port, 32,"uint8");
+    elseif strcmp(devType, 'MEG')
+        % Fix this
+        PTBSendTrigger(32,0);
+    else
+        Beeper(2000)
+    end
     % write(port, 128,"uint8");
-    Beeper(2000);
+%     Beeper(2000);
 
     %--! send trigger ! --
 
@@ -585,19 +638,19 @@ for i = 1:length(tasks)
 
     if taskIndex == 1
         [timingDataAll{i}, taskNames] = task(sequence, listLo, listHi, listMe, date, ...
-            screen, allCoords, lineWidthPix, taskNames, 1);
+            screen, allCoords, lineWidthPix, taskNames, 1, devType);
     elseif taskIndex == 2
         [timingDataAll{i}, taskNames] = task(sequence, bodyPartsListV, animalsListV, toolsListV, date, ...
-            screen, allCoords, lineWidthPix, taskNames);
+            screen, allCoords, lineWidthPix, taskNames, devType);
     elseif taskIndex == 3
         [timingDataAll{i}, taskNames] = task(sequence, animalsListA, toolsListA, bodyPartsListA, date, ...
-            screen, allCoords, lineWidthPix, audioDevice, taskNames);
+            screen, allCoords, lineWidthPix, audioDevice, taskNames, devType);
     end
 
 end
 
 %----------------end of Section V-----------------------------------
-
+          
 filename = sprintf('%s_taskOrder.mat', date);
 
 save(filename,'taskNames')
@@ -615,3 +668,11 @@ Screen('Flip', screen.win);
 KbStrokeWait;
 
 sca;
+
+
+%% test
+for i = 1:50
+Beeper(880,0.2,0.5)
+end
+
+
