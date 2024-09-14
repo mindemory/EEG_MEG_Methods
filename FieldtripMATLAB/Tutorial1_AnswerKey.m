@@ -22,29 +22,29 @@ addpath('/Users/mrugankdake/Documents/MATLAB/fieldtrip-20220104/external/spm12')
 
 % Path to EEG file
 eegPath = '../../Datasets/EEG/sub-01/eeg/sub-01_task-daf_eeg_filtered.vhdr';
-
-elecPosFile = '../../Datasets/iEEG/sub-01/eeg/sub-01_electrodes.tsv';
-elecPos = readtable(elecPosFile, 'FileType', 'text', 'Delimiter', '\t');
-% Add fiducials
-fiducials.name      = {'Nz', 'LPA', 'RPA'}';
-fiducials.x         = [-4.129838157917329e-18, -0.0729282673627754, 0.08278152042487033]';
-fiducials.y         = [0.10011015398430487, 3.008505424862354e-18, -3.414981080487009e-18]';
-fiducials.z         = [-5.7777898331617076e-33, 3.851859888774472e-34, 3.4666738998970245e-33]';
-fiducials.impedance = {'n/a', 'n/a', 'n/a'}';
-fiducialsTable      = struct2table(fiducials);
-elecPos             = [elecPos; struct2table(fiducials)];
-
-elec                = [];
-elec.label          = elecPos.name;
-elec.elecpos        = [elecPos.x, elecPos.y, elecPos.z];
-elec.chanpos        = elec.elecpos;
-elec.unit           = 'm';
+% 
+% elecPosFile = '../../Datasets/iEEG/sub-01/eeg/sub-01_electrodes.tsv';
+% elecPos = readtable(elecPosFile, 'FileType', 'text', 'Delimiter', '\t');
+% % Add fiducials
+% fiducials.name      = {'Nz', 'LPA', 'RPA'}';
+% fiducials.x         = [-4.129838157917329e-18, -0.0729282673627754, 0.08278152042487033]';
+% fiducials.y         = [0.10011015398430487, 3.008505424862354e-18, -3.414981080487009e-18]';
+% fiducials.z         = [-5.7777898331617076e-33, 3.851859888774472e-34, 3.4666738998970245e-33]';
+% fiducials.impedance = {'n/a', 'n/a', 'n/a'}';
+% fiducialsTable      = struct2table(fiducials);
+% elecPos             = [elecPos; struct2table(fiducials)];
+% 
+% elec                = [];
+% elec.label          = elecPos.name;
+% elec.elecpos        = [elecPos.x, elecPos.y, elecPos.z];
+% elec.chanpos        = elec.elecpos;
+% elec.unit           = 'm';
 % Load the EEG file using Fieldtrip
 % Fieldtrip requires 'cfg' structure to load the data
 cfg                 = [];
 cfg.dataset         = eegPath;
 % Add electrode positions
-cfg.elec            = elec;
+% cfg.elec            = elec;
 data                = ft_preprocessing(cfg);
 
 %% Plot EEG data (single channel plotting)

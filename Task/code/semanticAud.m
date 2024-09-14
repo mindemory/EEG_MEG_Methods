@@ -109,6 +109,7 @@ for i = 1:size(finalSequence, 1)
     PsychPortAudio('FillBuffer', audioDevice, stimulus');
 
     % write(port, current_code,"uint8");
+    % Stimulus onset Trigger code
 
     % Start audio and record onset time
     onsetTime = PsychPortAudio('Start', audioDevice, 1, 0, 1);
@@ -123,7 +124,9 @@ for i = 1:size(finalSequence, 1)
     offsetTime = offsetTime - startTime;
 
     % -----------------!!!send trigger for ending!!!-----------------
-    % write(port, current_code,"uint8");
+    % write(port, current_code,"uint8"); % Keep just the offset to make it
+    % consistent with classicalAud
+    % Task offset trigger code
     Beeper(2000)
 
     % store
