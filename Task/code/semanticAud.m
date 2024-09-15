@@ -132,12 +132,7 @@ for i = 1:size(finalSequence, 1)
     offsetTime = offsetTime - startTime;
 
     % -----------------!!!send trigger for ending!!!-----------------
-<<<<<<< HEAD
-    % write(port, current_code,"uint8"); % Keep just the offset to make it
-    % consistent with classicalAud
-    % Task offset trigger code
-    Beeper(2000)
-=======
+
     if strcmp(devType, 'EEG')
         write(port, current_code,"uint8");
     elseif strcmp(devType, 'MEG')
@@ -148,8 +143,6 @@ for i = 1:size(finalSequence, 1)
     end
     % write(port, current_code,"uint8");
 %     Beeper(2000)
->>>>>>> 3d8264f8b6abdcf9499fcbc411c3ceb3bbcf59e3
-
     % store
     timingData(i).stiType = stiType;
     timingData(i).stiName = stiName;
