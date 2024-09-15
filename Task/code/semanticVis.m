@@ -15,7 +15,7 @@
 %     dateString, window, white, allCoords, lineWidthPix, xCenter, yCenter, taskNames)
 
 function [timingData, taskNames] = semanticVis(seq, listReg, listOdd, listOddEx, ...
-    dateString, screen, allCoords, lineWidthPix, taskNames)
+    dateString, screen, allCoords, lineWidthPix, taskNames, devType)
 
 window = screen.win;
 white = screen.white;
@@ -61,8 +61,15 @@ WaitSecs(1);
 timingData = struct();
 
 % -----------------!!!send trigger for starting!!!-----------------
+if strcmp(devType, 'EEG')
+    write(port, 2,"uint8");
+elseif strcmp(devType, 'MEG')
+    PTBSendTrigger(2,0);
+else
+    Beeper(2000)
+end
 % write(port, 2,"uint8");
-Beeper(2000)
+% Beeper(2000)
 
 % Record the start time of the experiment
 startTime = GetSecs();
@@ -101,8 +108,15 @@ for i = 1:size(finalSequence, 1)
     disp(stimulus)
 
     % -----------------!!!send trigger for ending!!!-----------------
+    if strcmp(devType, 'EEG')
+        write(port, current_code,"uint8");
+    elseif strcmp(devType, 'MEG')
+        PTBSendTrigger(current_code,0);
+    else
+        Beeper(2000)
+    end
     % write(port, current_code,"uint8");
-    Beeper(2000)
+%     Beeper(2000)
 
     % store
     timingData(i).stiType = stiType;
