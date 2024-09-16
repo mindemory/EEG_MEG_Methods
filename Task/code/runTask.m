@@ -225,7 +225,7 @@ disp('audio setup finished')
 % it’s creating an array that consists of the string ‘A’ repeated numA
 % times. The {} around ‘A’ is used to create a cell array containing the string ‘A’. The 1
 % get the sequence representing two categories
-numA = 5 * 4; % Each word in set A is played 4 times
+numA = 20 * 4; % Each word in set A is played 4 times
 numB = round(0.2 / 0.8 * numA); % Calculate number of B words to maintain 0.8 to 0.2 ratio
 sequence = [repmat({'A'}, 1, numA) repmat({'B'}, 1, numB)];
 sequence = sequence(randperm(length(sequence))); % Shuffle sequence
