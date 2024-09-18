@@ -105,7 +105,7 @@ y = 5 + 2*t + 0.5*t.^2 + randn(size(t)); % Sample data with a polynomial trend
 
 % Plot original data
 figure;
-subplot(6,1,1);
+subplot(3,2,1);
 plot(t, y);
 title('Original Data');
 xlabel('Time');
@@ -115,7 +115,7 @@ ylabel('Value');
 p0 = polyfit(t, y, 0); % Fit a zero-order polynomial (mean)
 y_zero_order_trend = polyval(p0, t); % Evaluate the polynomial
 y_detrended_zero_order = y - y_zero_order_trend; % Subtract the zero-order trend
-subplot(6,1,2);
+subplot(3,2,2);
 plot(t, y_detrended_zero_order);
 title('Zero-Order Detrended Data (Mean Removed)');
 xlabel('Time');
@@ -126,13 +126,13 @@ p1 = polyfit(t, y, 1); % Fit a first-order polynomial (linear)
 y_first_order_trend = polyval(p1, t); % Evaluate the polynomial
 y_detrended_first_order = y - y_first_order_trend; % Subtract the first-order trend
 
-subplot(6,1,3);
+subplot(3,2,3);
 plot(t, y_first_order_trend);
 title('Linear Trend');
 xlabel('Time');
 ylabel('Value');
 
-subplot(6,1,4);
+subplot(3,2,4);
 plot(t, y_detrended_first_order);
 title('First-Order Detrended Data (Linear Trend Removed)');
 xlabel('Time');
@@ -143,14 +143,14 @@ p2 = polyfit(t, y, 2); % Fit a second-order polynomial
 y_poly_trend = polyval(p2, t); % Evaluate the polynomial
 
 
-subplot(6,1,5);
+subplot(3,2,5);
 plot(t, y_poly_trend);
 title('Second order Trend');
 xlabel('Time');
 ylabel('Value');
 
 y_detrended_poly = y - y_poly_trend; % Subtract the polynomial trend
-subplot(6,1,6);
+subplot(3,2,6);
 plot(t, y_detrended_poly);
 title('Polynomial Detrended Data (Second-Order Trend Removed)');
 xlabel('Time');
@@ -715,7 +715,7 @@ filtered_signal_gaussian = conv(signal, gaussian_kernel, 'same');
 
 % Plot the original and filtered signals
 figure;
-subplot(5,1,1);
+subplot(3,2,1);
 plot(signal, 'r');
 title('Original Signal');
 xlabel('Sample Index');
@@ -723,14 +723,15 @@ ylabel('Amplitude');
 ylim([-1 2]);
 xlim([1 length(signal)]);
 
-subplot(5,1,2);
+subplot(3,2,2);
 plot(filtered_signal_low, 'b');
 title('Low-Pass Filtered Signal');
 xlabel('Sample Index');
 ylabel('Amplitude');
 ylim([-1 2])
 xlim([1 length(signal)])
-subplot(5,1,3);
+
+subplot(3,2,3);
 plot(filtered_signal_high, 'g');
 title('High-Pass Filtered Signal');
 xlabel('Sample Index');
@@ -738,15 +739,14 @@ ylabel('Amplitude');
 ylim([-1 2])
 xlim([1 length(signal)])
 
-subplot(5,1,4);
-
+subplot(3,2,4);
 plot(gaussian_kernel, 'm');
 title('Gaussian Kernel');
 xlabel('Sample Index');
 ylabel('Amplitude');
 xlim([-100 length(gaussian_kernel)+100])
 
-subplot(5,1,5);
+subplot(3,2,5);
 plot(filtered_signal_gaussian, 'm');
 title('Gaussian Filtered Signal');
 xlabel('Sample Index');
@@ -762,7 +762,7 @@ y_ifft = ifft(x.*y);
 y_conv = conv(signal,gaussian_kernel, 'same');
 
 
-subplot(5,1,1);
+subplot(3,2,1);
 plot(signal, 'r');
 title('Original Signal');
 xlabel('Sample Index');
@@ -770,14 +770,14 @@ ylabel('Amplitude');
 ylim([-1 2]);
 xlim([1 length(signal)]);
 
-subplot(5,1,2);
+subplot(3,2,2);
 plot(gaussian_kernel, 'm');
 title('Gaussian Kernel');
 xlabel('Sample Index');
 ylabel('Amplitude');
 xlim([-100 length(gaussian_kernel)+100])
 
-subplot(5,1,3);
+subplot(3,2,3);
 plot(y_conv, 'r');
 title('Gaussian Filtered Signal (convolution)');
 xlabel('Sample Index');
@@ -785,7 +785,7 @@ ylabel('Amplitude');
 ylim([-1 2])
 xlim([1 length(signal)]);
 
-subplot(5,1,4);
+subplot(3,2,4);
 plot(y_ifft(...
     ceil(length(...
     gaussian_kernel)/2)+1 ... 
@@ -796,7 +796,7 @@ ylabel('Amplitude');
 ylim([-1 2])
 xlim([1 length(signal)]);
 
-subplot(5,1,5);
+subplot(3,2,5);
 plot(y_conv, 'r'); hold on;
 title('Gaussian Filtered Signal (convolution)');
 plot(y_ifft(...
