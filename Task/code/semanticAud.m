@@ -1,24 +1,22 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This code is created by Brian Yan (by2139@nyu.edu)
+% And has been adapted for this course.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % runs the stimlus sequence for semantic auditory oddball task
 % it takes as arguments
-% seq = the stimulus sequence based on categories created previously
-% listReg = the list of regular stimlui
-% listOdd = the list of odd stimuli
-% listOddEx = the second odd word list
-% the available list for this task are below, which are defined previously
-% animalListA = [...]
-% toolsListA = [...]
-% bodyPartsListA = [...], n = 20
+% cat = the single category (names) for the current stimulus
+% seq = the stimulus sequence based (the names used to call the actual audiodata
+% labels = the label sequence
+% data = audioDataDS, the data structure with all audio files
+% fullfield = the fieldnames of the selected categories for this blcck
+%     consider removing for brevity
+% cats = categories with words stored in the embedded structure
 % date = date of today (yyyymmdd) specified previouisly
 
 % the following arguments are general
 
-function [timingData, taskNames] = semanticAud(seq, listReg, listOdd, listOddEx, dateString, ...
-    screen, allCoords, lineWidthPix, audioDevice, taskNames, devType)
-
-window = screen.win;
-white = screen.white;
-xCenter = screen.xCenter;
-yCenter = screen.yCenter;
+function [timingData, taskNames] = semanticAud(cat, seq, labels, data, fullfield, cats, dateString, ...
+    window, white, allCoords, lineWidthPix, xCenter, yCenter, audioDevice, taskNames, devType)
 
 % Draw loading instruction to wait for sequence creation
 line = 'loading ...';
@@ -26,34 +24,41 @@ line = 'loading ...';
 DrawFormattedText(window, line, 'center', 'center', white);
 Screen('Flip', window);
 
+% category name
+category = cat;
+
+Data1 = append(fullfield{1},"Data");
+Data2 = append(fullfield{2},"Data");
+Data3 = append(fullfield{3},"Data");
+Data4 = append(fullfield{4},"Data");
+
 %------------test---------------------------------
 % seq = sequence;
 % listReg = animalsListA;
 % listOdd = bodyPartsListA;
 % listOddEx = toolsListA;
 
-% Create sequence
-finalSequence = getSequence(seq, listReg, listOdd, listOddEx);
-disp(finalSequence);
+% access sequence
+
 
 % Access audio data declared globally (e.g. animalsListA -> animalsData)
 % first get the prefix in the fieldnames
-prefixReg = inputname(2);
-prefixReg = prefixReg(1:end-5);
-prefixOdd = inputname(3);
-prefixOdd = prefixOdd(1:end-5);
-prefixOddEx = inputname(4);
-prefixOddEx = prefixOddEx(1:end-5);
-
-% then construct global variable names
-globalReg = [prefixReg 'Data'];
-globalOdd = [prefixOdd 'Data'];
-globalOddEx = [prefixOddEx 'Data'];
-
-% access the global variables
-regData = evalin('base', globalReg);
-oddData = evalin('base', globalOdd);
-oddExData = evalin("base", globalOddEx);
+% prefixReg = inputname(2);
+% prefixReg = prefixReg(1:end-5);
+% prefixOdd = inputname(3);
+% prefixOdd = prefixOdd(1:end-5);
+% prefixOddEx = inputname(4);
+% prefixOddEx = prefixOddEx(1:end-5);
+%
+% % then construct global variable names
+% globalReg = [prefixReg 'Data'];
+% globalOdd = [prefixOdd 'Data'];
+% globalOddEx = [prefixOddEx 'Data'];
+%
+% % access the global variables
+% regData = evalin('base', globalReg);
+% oddData = evalin('base', globalOdd);
+% oddExData = evalin("base", globalOddEx);
 
 line1 = 'In this task, you will listen to a set of words.';
 line2 = '\n\n Please pay attention to the words read to you, and try to';
@@ -70,7 +75,13 @@ Screen('Flip', window);
 KbStrokeWait;
 
 % Draw fixation cross
-Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter]); %, 2);
+if strcmp(devType, 'EEG')
+    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter], 2);
+elseif strcmp(devType, 'MEG')
+    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter], 2);
+else
+    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter]);
+end
 Screen('Flip', window);
 
 WaitSecs(2);
@@ -79,6 +90,7 @@ WaitSecs(2);
 timingData = struct();
 
 % -----------------!!!send trigger for starting!!!-----------------
+% write(port, 4,"uint8");
 if strcmp(devType, 'EEG')
     write(port, 4,"uint8");
 elseif strcmp(devType, 'MEG')
@@ -87,37 +99,78 @@ elseif strcmp(devType, 'MEG')
 else
     Beeper(2000)
 end
-% write(port, 4,"uint8");
-% Beeper(2000)
 
 % Record the start time of the experiment
 startTime = GetSecs();
 
-% running the stimlus sequence
-for i = 1:size(finalSequence, 1)
-    stiType = finalSequence{i, 1};
-    stiName = finalSequence{i, 2};
+for i = 1:length(seq)
+    word = seq{i};  % Get the current word in the sequence
+    label = labels{i};   % Get the corresponding label for the word (reg or odd)
+
+    % Assuming the task type (at) corresponds to an audio field in audioDataDS
+    % Example: audioDataDS.animal{'lion'} gives the audio data for 'lion'
+
+    % Access the audio data based on the word in the sequence
+    if ismember(word, cats.(fullfield{1}))
+        stimulus = data.(Data1).(word);
+    elseif ismember(word, cats.(fullfield{2}))
+        stimulus = data.(Data2).(word);
+    elseif ismember(word, cats.(fullfield{3}))
+        stimulus = data.(Data3).(word);
+    elseif ismember(word, cats.(fullfield{4}))
+        stimulus = data.(Data4).(word);
+    end
+    % if isfield(audioDataDS, word)
+    %     stimulus = audioDataDS.(word);  % Fetch audio data from audioDataDS
+    % else
+    %     error(['Audio data for word "' word '" not found in audioDataDS']);
+    % end
+    if iscell(stimulus)
+        stimulus = cell2mat(stimulus);  % Convert cell array to matrix if necessary
+    end
+
+    % Check the dimensions of the stimulus
+    disp(size(stimulus));  % Ensure this is a 1xN (mono) or 2xN (stereo) matrix
+    % running the stimlus sequence
+    % for i = 1:size(finalSequence, 1)
+    %     stiType = finalSequence{i, 1};
+    %     stiName = finalSequence{i, 2};
 
     % onsetTime = GetSecs() - startTime;
 
-    if strcmp(stiType, 'A')
-        current_code = 64;
-        stimulus = regData.(stiName);
-    else
-        current_code = 128;
-        if ismember(stiName,fieldnames(oddData))
-            stimulus = oddData.(stiName);
-        elseif ismember(stiName,fieldnames(oddExData))
-            stimulus = oddExData.(stiName);
-        end
-    end
+    % if strcmp(stiType, 'A')
+    %     current_code = 64;
+    %     stimulus = regData.(stiName);
+    % else
+    %     current_code = 128;
+    %     if ismember(stiName,fieldnames(oddData))
+    %         stimulus = oddData.(stiName);
+    %     elseif ismember(stiName,fieldnames(oddExData))
+    %         stimulus = oddExData.(stiName);
+    %     end
+    % end
 
-    disp(stimulus)
+
     % Fill the audio buffer
     PsychPortAudio('FillBuffer', audioDevice, stimulus');
 
-    % write(port, current_code,"uint8");
-    % Stimulus onset Trigger code
+    % -----------------!!!send trigger for stimulus onset!!!-----------------
+
+
+    if label == "reg"
+        current_code = 64;
+    elseif label == "odd"
+        current_code = 128;
+    end
+
+    if strcmp(devType, 'EEG')
+        write(port, current_code,"uint8");
+    elseif strcmp(devType, 'MEG')
+        % Fix this
+        PTBSendTrigger(current_code,0);
+    else
+        Beeper(2000)
+    end
 
     % Start audio and record onset time
     onsetTime = PsychPortAudio('Start', audioDevice, 1, 0, 1);
@@ -128,24 +181,15 @@ for i = 1:size(finalSequence, 1)
     % get offset time
     offsetTime = GetSecs();
 
+
+
     onsetTime = onsetTime - startTime;
     offsetTime = offsetTime - startTime;
 
-    % -----------------!!!send trigger for ending!!!-----------------
 
-    if strcmp(devType, 'EEG')
-        write(port, current_code,"uint8");
-    elseif strcmp(devType, 'MEG')
-        % Fix this
-        PTBSendTrigger(current_code,0);
-    else
-        Beeper(2000)
-    end
-    % write(port, current_code,"uint8");
-%     Beeper(2000)
     % store
-    timingData(i).stiType = stiType;
-    timingData(i).stiName = stiName;
+    timingData(i).stiType = label;
+    timingData(i).stiName = word;
     timingData(i).onsetTime = onsetTime;
     timingData(i).offsetTime = offsetTime;
 
@@ -159,12 +203,17 @@ end
 
 timingData(1).startTime = startTime;
 
-regObject = inputname(2);
 
-filename = sprintf('%s_timingData_%s_%s.mat', dateString, 'saud', regObject);
+dateStringBlah = datestr(now, 'yyyymmdd_HHMMSS');
+
+filename = sprintf('%s_timingData_%s_%s.mat', dateStringBlah, 'saud', cat);
 
 taskNames{end+1} = filename;
-
+dirToSave = '../../../TaskTiming/';
+if ~exist("dirToSave", 'dir')
+    mkdir(dirToSave)
+end
+filename = [dirToSave filename];
 save(filename, 'timingData');
 
 line1 = 'This is the end of the task. Please put down the categories';

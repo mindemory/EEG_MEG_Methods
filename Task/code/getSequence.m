@@ -1,3 +1,7 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This code is created by Brian Yan (by2139@nyu.edu)
+% And has been adapted for this course.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define function that create the final sequence ensuring no stimulus is repeated consecutively
 % seq = the sequence that determines stimulus display by category
 % listReg = list of regular stimuli

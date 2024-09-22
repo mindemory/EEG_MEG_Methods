@@ -1,3 +1,8 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This code is created by Mrugank Dake (mrugank.dake@nyu.edu)
+% And has been adapted for this course.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function screen = initScreen(parameters)
 % To make it transparent for working in demo mode
 if parameters.isDemoMode

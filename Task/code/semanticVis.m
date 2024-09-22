@@ -1,26 +1,20 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This code is created by Brian Yan (by2139@nyu.edu)
+% And has been adapted for this course.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % runs the stimlus sequence for semantic visual oddball task
 % it takes as arguments
+% cat = the single category for the current stimulus
+% seq = the stimulus sequence
+% labels = the label sequence
 % seq = the stimulus sequence based on categories created previously
-% listReg = the list of regular stimlui
-% listOdd = the list of odd stimuli
-% the available list for this task are below, which are defined previously
-% animalsListV = [...]
-% toolsListV = [...]
-% bodyPartsListV = [...], n = 20
 % date = date of today (yyyymmdd) specified previouisly
 
 % the following arguments are general
 
-% function [timingData, taskNames] = semanticVis(seq, listReg, listOdd, listOddEx, ...
-%     dateString, window, white, allCoords, lineWidthPix, xCenter, yCenter, taskNames)
-
-function [timingData, taskNames] = semanticVis(seq, listReg, listOdd, listOddEx, ...
-    dateString, screen, allCoords, lineWidthPix, taskNames, devType)
-
-window = screen.win;
-white = screen.white;
-xCenter = screen.xCenter;
-yCenter = screen.yCenter;
+function [timingData, taskNames] = semanticVis(cat, seq, labels, ...
+    dateString, window, white, allCoords, lineWidthPix, xCenter, yCenter, taskNames, devType)
 
 % Draw loading instruction to wait for sequence creation
 line = 'loading ...';
@@ -28,8 +22,7 @@ line = 'loading ...';
 DrawFormattedText(window, line, 'center', 'center', white);
 Screen('Flip', window);
 
-% Create sequence
-finalSequence = getSequence(seq, listReg, listOdd, listOddEx);
+category = cat;
 
 line1 = 'In this task, you will be presented with a set of words.';
 line2 = '\n\n Please pay attention to the words presented to you, and try to';
@@ -46,7 +39,13 @@ Screen('Flip', window);
 KbStrokeWait;
 
 % Draw fixation cross
-Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter]); %, 2);
+if strcmp(devType, 'EEG')
+    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter], 2);
+elseif strcmp(devType, 'MEG')
+    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter], 2);
+else
+    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter]);
+end
 Screen('Flip', window);
 
 WaitSecs(1);
@@ -68,29 +67,47 @@ elseif strcmp(devType, 'MEG')
 else
     Beeper(2000)
 end
-% write(port, 2,"uint8");
-% Beeper(2000)
 
 % Record the start time of the experiment
 startTime = GetSecs();
 
-% running the stimlus sequence
-for i = 1:size(finalSequence, 1)
-    stiType = finalSequence{i, 1};
-    stiName = finalSequence{i, 2};
-
-    % onsetTime = GetSecs() - startTime;
-
-    if strcmp(stiType, 'A')
-        current_code = 64;
-        stimulus = stiName;
-    else
-        current_code = 128;
-        stimulus = stiName;
-    end
+% % running the stimlus sequence
+% for i = 1:size(finalSequence, 1)
+%     stiType = finalSequence{i, 1};
+%     stiName = finalSequence{i, 2};
+%
+%     % onsetTime = GetSecs() - startTime;
+%
+%     if strcmp(stiType, 'A')
+%         current_code = 64;
+%         stimulus = stiName;
+%     else
+%         current_code = 128;
+%         stimulus = stiName;
+%     end
+for i = 1:length(seq)
+    stimulus = seq{i};
+    label = labels{i};
 
     % Draw stimulus
     DrawFormattedText(window, stimulus, 'center', 'center', white);
+
+    % -----------------!!!send trigger for stimulus onset!!!-----------------
+
+
+    if label == "reg"
+        current_code = 64;
+    elseif label == "odd"
+        current_code = 128;
+    end
+
+    if strcmp(devType, 'EEG')
+        write(port, current_code,"uint8");
+    elseif strcmp(devType, 'MEG')
+        PTBSendTrigger(current_code,0);
+    else
+        Beeper(2000)
+    end
 
     % Flip to the screen
     onsetTime = Screen('Flip', window);
@@ -102,25 +119,16 @@ for i = 1:size(finalSequence, 1)
 
     offsetTime = Screen('Flip', window);
 
+
+
     onsetTime = onsetTime - startTime;
     offsetTime = offsetTime - startTime;
 
     disp(stimulus)
 
-    % -----------------!!!send trigger for ending!!!-----------------
-    if strcmp(devType, 'EEG')
-        write(port, current_code,"uint8");
-    elseif strcmp(devType, 'MEG')
-        PTBSendTrigger(current_code,0);
-    else
-        Beeper(2000)
-    end
-    % write(port, current_code,"uint8");
-%     Beeper(2000)
-
     % store
-    timingData(i).stiType = stiType;
-    timingData(i).stiName = stiName;
+    timingData(i).stiType = label;
+    timingData(i).stiName = stimulus;
     timingData(i).onsetTime = onsetTime;
     timingData(i).offsetTime = offsetTime;
 
@@ -131,12 +139,15 @@ end
 
 timingData(1).startTime = startTime;
 
-regObject = inputname(2);
-
-filename = sprintf('%s_timingData_%s_%s.mat', dateString, 'svis', regObject);
+dateStringBlah = datestr(now, 'yyyymmdd_HHMMSS');
+filename = sprintf('%s_timingData_%s_%s.mat', dateStringBlah, 'svis', category);
 
 taskNames{end+1} = filename;
-
+dirToSave = '../../../TaskTiming/';
+if ~exist("dirToSave", 'dir')
+    mkdir(dirToSave)
+end
+filename = [dirToSave filename];
 save(filename, 'timingData');
 
 
