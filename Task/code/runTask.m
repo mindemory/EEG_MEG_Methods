@@ -470,56 +470,56 @@ KbStrokeWait;
 % tasks = {'vt', 'vt', 'vt', 'vt', 'at', 'at', 'at', 'at'};  % Visual and Auditory Tasks
 % sequences_vt = {vtSeq1, vtSeq2, vtSeq3, vtSeq4};  % Visual sequences (replace with actual sequence names)
 % sequences_at = {atSeq1, atSeq2, atSeq3, atSeq4};  % Auditory sequences (replace with actual sequence names)
-
-% the categories in the block
-seqFieldsA = fieldnames(audSeq1);
-seqFieldsV = fieldnames(visSeq1);
-disp(1)
-
-% same as above
-labelsFieldsA = fieldnames(audLabels1);
-labelsFieldsV = fieldnames(visLabels1);
-disp(2)
-% categories in the block for ca
-seqFieldsCa = fieldnames(seqAll.caBlk1.Sequences);
-labelsFieldsCa = fieldnames(seqAll.caBlk1.Labels);
-disp(3)
-% Combine task types with corresponding sequences into a single structure
-task_sequence_blk = [
-    struct('task', 'vs', 'sequence', seqFieldsV{1}, 'labels', labelsFieldsV{1}, 'cat', fieldVis1{1}), ...
-    struct('task', 'vs', 'sequence', seqFieldsV{2}, 'labels', labelsFieldsV{2}, 'cat', fieldVis1{2}), ...
-    struct('task', 'vs', 'sequence', seqFieldsV{3}, 'labels', labelsFieldsV{3}, 'cat', fieldVis1{3}), ...
-    struct('task', 'vs', 'sequence', seqFieldsV{4}, 'labels', labelsFieldsV{4}, 'cat', fieldVis1{4}), ...
-    struct('task', 'as', 'sequence', seqFieldsA{1}, 'labels', labelsFieldsA{1}, 'cat', fieldAud1{1}), ...
-    struct('task', 'as', 'sequence', seqFieldsA{2}, 'labels', labelsFieldsA{2}, 'cat', fieldAud1{2}), ...
-    struct('task', 'as', 'sequence', seqFieldsA{3}, 'labels', labelsFieldsA{3}, 'cat', fieldAud1{3}), ...
-    struct('task', 'as', 'sequence', seqFieldsA{4}, 'labels', labelsFieldsA{4}, 'cat', fieldAud1{4}), ...
-    struct('task', 'ca', 'sequence', seqFieldsCa{1}, 'labels', labelsFieldsCa{1}, 'cat', []), ...
-    struct('task', 'ca', 'sequence', seqFieldsCa{2}, 'labels', labelsFieldsCa{2}, 'cat', []), ...
-    struct('task', 'ca', 'sequence', seqFieldsCa{3}, 'labels', labelsFieldsCa{3}, 'cat', []), ...
-    struct('task', 'ca', 'sequence', seqFieldsCa{4}, 'labels', labelsFieldsCa{4}, 'cat', []), ...
-    ];
-disp(4)
-% Randomize the order of tasks and sequences
-random_order = randperm(length(task_sequence_blk));  % Get random order
-
-% Execute the tasks in random order
-for i = 1:length(random_order)
-    current_task = task_sequence_blk(random_order(i));
-
-
-    % Execute the appropriate task function based on the task type
-    if strcmp(current_task.task, 'vs')
-        semanticVis(current_task.cat, visSeq1.(current_task.sequence), visLabels1.(current_task.labels),date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType);  % Call visual semantic function
-    elseif strcmp(current_task.task, 'as')
-        semanticAud(current_task.cat, audSeq1.(current_task.sequence), audLabels1.(current_task.labels), audioDataDS, fieldAud1, audBlk1, date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType);  % Call auditory semantic function
-    elseif strcmp(current_task.task, 'ca')
-        classicalAud(current_task.sequence, seqAll.caBlk1.Sequences.(current_task.sequence), ...
-            seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
-    end
-end
+% 
+% % the categories in the block
+% seqFieldsA = fieldnames(audSeq1);
+% seqFieldsV = fieldnames(visSeq1);
+% disp(1)
+% 
+% % same as above
+% labelsFieldsA = fieldnames(audLabels1);
+% labelsFieldsV = fieldnames(visLabels1);
+% disp(2)
+% % categories in the block for ca
+% seqFieldsCa = fieldnames(seqAll.caBlk1.Sequences);
+% labelsFieldsCa = fieldnames(seqAll.caBlk1.Labels);
+% disp(3)
+% % Combine task types with corresponding sequences into a single structure
+% task_sequence_blk = [
+%     struct('task', 'vs', 'sequence', seqFieldsV{1}, 'labels', labelsFieldsV{1}, 'cat', fieldVis1{1}), ...
+%     struct('task', 'vs', 'sequence', seqFieldsV{2}, 'labels', labelsFieldsV{2}, 'cat', fieldVis1{2}), ...
+%     struct('task', 'vs', 'sequence', seqFieldsV{3}, 'labels', labelsFieldsV{3}, 'cat', fieldVis1{3}), ...
+%     struct('task', 'vs', 'sequence', seqFieldsV{4}, 'labels', labelsFieldsV{4}, 'cat', fieldVis1{4}), ...
+%     struct('task', 'as', 'sequence', seqFieldsA{1}, 'labels', labelsFieldsA{1}, 'cat', fieldAud1{1}), ...
+%     struct('task', 'as', 'sequence', seqFieldsA{2}, 'labels', labelsFieldsA{2}, 'cat', fieldAud1{2}), ...
+%     struct('task', 'as', 'sequence', seqFieldsA{3}, 'labels', labelsFieldsA{3}, 'cat', fieldAud1{3}), ...
+%     struct('task', 'as', 'sequence', seqFieldsA{4}, 'labels', labelsFieldsA{4}, 'cat', fieldAud1{4}), ...
+%     struct('task', 'ca', 'sequence', seqFieldsCa{1}, 'labels', labelsFieldsCa{1}, 'cat', []), ...
+%     struct('task', 'ca', 'sequence', seqFieldsCa{2}, 'labels', labelsFieldsCa{2}, 'cat', []), ...
+%     struct('task', 'ca', 'sequence', seqFieldsCa{3}, 'labels', labelsFieldsCa{3}, 'cat', []), ...
+%     struct('task', 'ca', 'sequence', seqFieldsCa{4}, 'labels', labelsFieldsCa{4}, 'cat', []), ...
+%     ];
+% disp(4)
+% % Randomize the order of tasks and sequences
+% random_order = randperm(length(task_sequence_blk));  % Get random order
+% 
+% % Execute the tasks in random order
+% for i = 1:length(random_order)
+%     current_task = task_sequence_blk(random_order(i));
+% 
+% 
+%     % Execute the appropriate task function based on the task type
+%     if strcmp(current_task.task, 'vs')
+%         semanticVis(current_task.cat, visSeq1.(current_task.sequence), visLabels1.(current_task.labels),date, ...
+%             screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType);  % Call visual semantic function
+%     elseif strcmp(current_task.task, 'as')
+%         semanticAud(current_task.cat, audSeq1.(current_task.sequence), audLabels1.(current_task.labels), audioDataDS, fieldAud1, audBlk1, date, ...
+%             screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType);  % Call auditory semantic function
+%     elseif strcmp(current_task.task, 'ca')
+%         classicalAud(current_task.sequence, seqAll.caBlk1.Sequences.(current_task.sequence), ...
+%             seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
+%     end
+% end
 
 
 
@@ -578,6 +578,8 @@ for i = 1:length(random_order)
     end
 end
 
+PsychPortAudio('Close', audioDevice);
+
 %------------------end of Section I------------------------------
 
 
@@ -602,146 +604,7 @@ end
 
 
 % ----------Section II------------------------------------------------
-
-line1 = 'In the following task, you will listen to a story.';
-line2 = '\n\n Press [space] to continue whenever you are ready.';
-
-% Draw instructions
-DrawFormattedText(screen.win, [line1 line2], 'center', 'center', screen.white);
-
-% Flip to the screen
-Screen('Flip', screen.win);
-
-
-% Define audio device (no need since no clean up in the previous section)
-% audioDevice = PsychPortAudio('Open', [], 1, 1, [], 2);
-
-% Set playback volume to 60%
-PsychPortAudio('Volume', audioDevice, 0.6);
-
-
-% PsychPortAudio('FillBuffer', audioDevice, [storyAu']);
-
-% Set the cell array that contains the sequence of audio to be played
-%   (the field name for the cue audio is "Cue")
-storySeq = {'Marine' 'Main1' 'Medical' 'Main2' 'Trial' 'Main3' 'War' 'Main4'};
-
-% initialize ds to store timing structure
-timingData2 = struct();
-
-% Press any key to continue
-KbStrokeWait;
-
-% Draw fixation cross
-if strcmp(devType, 'EEG')
-    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter], 2);
-elseif strcmp(devType, 'MEG')
-    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter], 2);
-else
-    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter]);
-end
-Screen('Flip', screen.win);
-
-%--! send trigger ! --
-
-if strcmp(devType, 'EEG')
-    write(port, 8,"uint8");
-elseif strcmp(devType, 'MEG')
-    PTBSendTrigger(8,0);
-else
-    Beeper(2000)
-end
-
-%--! send trigger ! --
-
-startTime = GetSecs;
-
-% Start audio playback
-%[, repetitions=1] [, when=0] [, waitForStart=1] (so it records the actual
-% onset time)
-
-for i = 1:numel(storySeq)
-
-    % get event name
-    event = storySeq{i};
-
-    % get audio
-    audioData = storyData.(event);
-
-    PsychPortAudio('FillBuffer', audioDevice, audioData');
-
-    % write(port, current_code,"uint8");
-
-    % Start audio and record onset time
-    onsetTime = PsychPortAudio('Start', audioDevice, 1, 0, 1);
-
-
-    %--! send trigger ! --
-
-    % write(port, 64,"uint8");
-    Beeper(2000);
-
-    %--! send trigger ! --
-
-    % Wait for the audio to finish
-    PsychPortAudio('Stop', audioDevice, 1, 1);
-
-
-    % get offset time
-    offsetTime = GetSecs();
-
-    %--! send trigger ! --
-
-    if strcmp(devType, 'EEG')
-        write(port, 16,"uint8");
-    elseif strcmp(devType, 'MEG')
-        PTBSendTrigger(16,0);
-    else
-        Beeper(2000)
-    end
-
-    %--! send trigger ! --
-
-    onsetTime = onsetTime - startTime;
-    offsetTime = offsetTime - startTime;
-
-
-    % onsetTime = PsychPortAudio('Start', audioDevice, 1, 0, 1);
-    %
-    % % Wait for the audio to finish
-    % offsetTime = PsychPortAudio('Stop', audioDevice, 1, 1);
-    %
-
-    % Record duration time
-    duration = offsetTime-onsetTime;
-
-    timingData2(i).event = event;
-    timingData2(i).onsetTime = onsetTime;
-    timingData2(i).offsetTime = offsetTime;
-    timingData2(i).duration = duration;
-
-end
-dateStringBlah = datestr(now, 'yyyymmdd_HHMMSS');
-filename = sprintf('%s_timingData_%s.mat', dateStringBlah, 'story1');
-
-% Save timing data to a .mat file
-dirToSave = '../../../TaskTiming/';
-if ~exist("dirToSave", 'dir')
-    mkdir(dirToSave)
-end
-filename = [dirToSave filename];
-save(filename, 'timingData2');
-
-line = 'This task is over. Please press [space] to proceed to the next task.';
-
-DrawFormattedText(screen.win, line, 'center', 'center', screen.white);
-
-Screen('Flip', screen.win);
-
-KbStrokeWait;
-
-sca;
-
+ 
 %------------end of Section II--------------------------------------
 
 
@@ -771,6 +634,12 @@ sca;
 
 
 %-------------------Section III----------------------------------
+
+% Define audio device
+audioDevice = PsychPortAudio('Open', [], 1, 1, [], 1);
+
+% Set playback volume to 60%
+PsychPortAudio('Volume', audioDevice, 0.6);
 
 % the categories in the block
 seqFieldsA = fieldnames(audSeq1);
@@ -892,6 +761,8 @@ for i = 1:length(random_order)
     end
 end
 
+
+PsychPortAudio('Close', audioDevice);
 %----------------end of section IV---------------------------------
 
 
@@ -906,6 +777,12 @@ end
 
 
 %------------------start of Section V-----------------------------------
+
+% Define audio device
+audioDevice = PsychPortAudio('Open', [], 1, 1, [], 2);
+
+% Set playback volume to 60%
+PsychPortAudio('Volume', audioDevice, 0.6);
 
 line1 = 'In the following task, you will listen to the story again.';
 line2 = '\n\n Press [space] to continue whenever you are ready.';
@@ -933,18 +810,18 @@ PsychPortAudio('Volume', audioDevice, 0.6);
 storySeq = {'Marine' 'Main1' 'Medical' 'Main2' 'Trial' 'Main3' 'War' 'Main4'};
 
 % initialize ds to store timing structure
-timingData4 = struct();
+timingData3 = struct();
 
 % Press any key to continue
 KbStrokeWait;
 
 % Draw fixation cross
 if strcmp(devType, 'EEG')
-    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter], 2);
+    Screen('DrawLines', screen.win, allCoords, lineWidthPix, screen.white, [screen.xCenter, screen.yCenter], 2);
 elseif strcmp(devType, 'MEG')
-    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter], 2);
+    Screen('DrawLines', screen.win, allCoords, lineWidthPix, screen.white, [screen.xCenter, screen.yCenter], 2);
 else
-    Screen('DrawLines', window, allCoords, lineWidthPix, white, [xCenter yCenter]);
+    Screen('DrawLines', screen.win, allCoords, lineWidthPix, screen.white, [screen.xCenter, screen.yCenter]);
 end
 Screen('Flip', screen.win);
 
@@ -977,11 +854,7 @@ for i = 1:numel(storySeq)
     PsychPortAudio('FillBuffer', audioDevice, audioData');
 
     % write(port, current_code,"uint8");
-
-    % Start audio and record onset time
-    onsetTime = PsychPortAudio('Start', audioDevice, 1, 0, 1);
-
-
+    
     %--! send trigger ! --
 
     if strcmp(devType, 'EEG')
@@ -993,6 +866,10 @@ for i = 1:numel(storySeq)
     end
 
     %--! send trigger ! --
+    
+    % Start audio and record onset time
+    onsetTime = PsychPortAudio('Start', audioDevice, 1, 0, 1);
+
 
     % Wait for the audio to finish
     PsychPortAudio('Stop', audioDevice, 1, 1);
@@ -1001,12 +878,6 @@ for i = 1:numel(storySeq)
     % get offset time
     offsetTime = GetSecs();
 
-    %--! send trigger ! --
-
-    % write(port, 128,"uint8");
-    Beeper(2000);
-
-    %--! send trigger ! --
 
     onsetTime = onsetTime - startTime;
     offsetTime = offsetTime - startTime;
@@ -1021,10 +892,10 @@ for i = 1:numel(storySeq)
     % Record duration time
     duration = offsetTime-onsetTime;
 
-    timingData4(i).event = event;
-    timingData4(i).onsetTime = onsetTime;
-    timingData4(i).offsetTime = offsetTime;
-    timingData4(i).duration = duration;
+    timingData3(i).event = event;
+    timingData3(i).onsetTime = onsetTime;
+    timingData3(i).offsetTime = offsetTime;
+    timingData3(i).duration = duration;
 
 end
 
@@ -1046,6 +917,7 @@ Screen('Flip', screen.win);
 
 KbStrokeWait;
 
+PsychPortAudio('Close', audioDevice);
 %-------------------end of Section V--------------------------
 
 
@@ -1067,7 +939,11 @@ KbStrokeWait;
 
 
 %--------------------Section VI---------------------------------------
+% Define audio device
+audioDevice = PsychPortAudio('Open', [], 1, 1, [], );
 
+% Set playback volume to 60%
+PsychPortAudio('Volume', audioDevice, 0.6);
 
 % the categories in the block
 seqFieldsA = fieldnames(audSeq2);
