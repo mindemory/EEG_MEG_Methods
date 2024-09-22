@@ -31,7 +31,7 @@ elseif strcmp(hostname, 'meg-stim-mac.psych.nyu.edu')
     devType = 'MEG';
 end
 stimDir = '../stimulus';
-screen = initScreen(parameters);
+screen = initScreen(parameters, devType);
 
 % if 0, run catA, if 1, run catB
 ctCondition = 0;

@@ -3,7 +3,7 @@
 % And has been adapted for this course.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function screen = initScreen(parameters)
+function screen = initScreen(parameters, devType)
 % To make it transparent for working in demo mode
 if parameters.isDemoMode
     PsychDebugWindowConfiguration(0, 0.8);
@@ -35,7 +35,11 @@ screen.ifi = Screen('GetFlipInterval', screen.win);
 Screen('BlendFunction', screen.win, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 
 % Screen('BlendFunction', screen.win, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
-Screen('TextSize', screen.win, 48);
+if strcmp(devType, 'MEG')
+    Screen('TextSize', screen.win, 24);
+else
+    Screen('TextSize', screen.win, 48);
+end
 InitializePsychSound(1);
 
 % Retreive the maximum priority number

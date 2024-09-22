@@ -119,9 +119,9 @@ for i = 1:numel(seq)
     if strcmp(devType, 'EEG')
         Beeper(stimulus, 0.45); % needs to be tested
     elseif strcmp(devType, 'MEG')
-        Beeper(stimulus, 0.45); % needs to be tested
+        Beeper(stimulus, 0.06, 0.45); % needs to be tested
     else
-        Beeper(stimulus, 0.45);
+        Beeper(stimulus, [], 0.45);
     end
 
 
