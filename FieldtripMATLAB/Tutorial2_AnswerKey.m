@@ -203,3 +203,38 @@ data_re_ref = MeanMultiplier * data;
 figure;
 imagesc(MeanMultiplier);
 
+%% Compute power at specific frequency for a single channel by taking inner product with a complex sine wave
+elecIdx = find(strcmp({elecPos.name}, 'O1'));
+
+freqs = 50:1:69;
+disp(length(freqs));
+
+powerVec = zeros(1, length(freqs));
+timeToPlot = 2000; % Time in seconds
+t = rawData.time{1}(rawData.time{1} < timeToPlot);
+X = data(elecIdx, 1:length(t));
+
+for i = 1:length(freqs)
+    k = freqs(i);
+
+    % Compute the complex sine wave (similar to exp(-1j * 2 * pi * k * t) in Python)
+    W = exp(-1i * 2 * pi * k * t);
+
+    % Compute the inner product (DFT coefficient for frequency k)
+    X_k = W * X.';
+    
+
+    % Calculate power at the given frequency
+    powerVec(i) = real(X_k).^2 + imag(X_k).^2;
+end
+
+figure;
+subplot(2, 1, 1);
+plot(t, X);
+xlabel('Time (s)');
+ylabel('Amplitude (uV)');
+
+subplot(2, 1, 2);
+bar(freqs, powerVec);
+xlabel('Frequency (Hz)');
+ylabel('Power');
