@@ -557,7 +557,138 @@ PsychPortAudio('Close', audioDevice);
 
 
 % ----------Section II------------------------------------------------
- 
+
+% Define audio device
+FSMan = 24000;
+audioDevice = PsychPortAudio('Open', [], 1, 1, FSMan, 1);
+
+% Set playback volume to 60%
+PsychPortAudio('Volume', audioDevice, 0.6);
+
+line1 = 'In the following task, you will listen to the story.';
+line2 = '\n\n Press [space] to continue whenever you are ready.';
+
+% Draw instructions
+DrawFormattedText(screen.win, [line1 line2], 'center', 'center', screen.white);
+
+% Flip to the screen
+Screen('Flip', screen.win);
+
+
+
+
+% Define audio device (no need since no clean up in the previous section)
+% audioDevice = PsychPortAudio('Open', [], 1, 1, [], 2);
+
+% Set playback volume to 60%
+PsychPortAudio('Volume', audioDevice, 0.6);
+
+
+% PsychPortAudio('FillBuffer', audioDevice, [storyAu']);
+
+% Set the cell array that contains the sequence of audio to be played
+%   (the field name for the cue audio is "Cue")
+storySeq = {'Marine' 'Main1' 'Medical' 'Main2' 'Trial' 'Main3' 'War' 'Main4'};
+
+% initialize ds to store timing structure
+timingData3 = struct();
+
+% Press any key to continue
+KbStrokeWait;
+
+% Draw fixation cross
+if strcmp(devType, 'EEG')
+    Screen('DrawLines', screen.win, allCoords, lineWidthPix, screen.white, [screen.xCenter, screen.yCenter], 2);
+elseif strcmp(devType, 'MEG')
+    Screen('DrawLines', screen.win, allCoords, lineWidthPix, screen.white, [screen.xCenter, screen.yCenter], 2);
+else
+    Screen('DrawLines', screen.win, allCoords, lineWidthPix, screen.white, [screen.xCenter, screen.yCenter]);
+end
+Screen('Flip', screen.win);
+
+%--! send trigger ! --
+
+if strcmp(devType, 'EEG')
+    write(port, 8,"uint8");
+elseif strcmp(devType, 'MEG')
+    PTBSendTrigger(8,0);
+else
+    Beeper(2000)
+end
+
+%--! send trigger ! --
+
+startTime = GetSecs;
+
+% Start audio playback
+%[, repetitions=1] [, when=0] [, waitForStart=1] (so it records the actual
+% onset time)
+
+for i = 1:numel(storySeq)
+
+    % get event name
+    event = storySeq{i};
+
+    % get audio
+    audioData = storyData.(event);
+
+    PsychPortAudio('FillBuffer', audioDevice, audioData');
+
+    % write(port, current_code,"uint8");
+    
+    %--! send trigger ! --
+
+    if strcmp(devType, 'EEG')
+        write(port, 16,"uint8");
+    elseif strcmp(devType, 'MEG')
+        PTBSendTrigger(16,0);
+    else
+        Beeper(2000)
+    end
+
+    %--! send trigger ! --
+    
+    % Start audio and record onset time
+    onsetTime = PsychPortAudio('Start', audioDevice, 1, 0, 1);
+
+
+    % Wait for the audio to finish
+    PsychPortAudio('Stop', audioDevice, 1, 1);
+
+
+    % get offset time
+    offsetTime = GetSecs();
+
+
+    onsetTime = onsetTime - startTime;
+    offsetTime = offsetTime - startTime;
+
+
+    % onsetTime = PsychPortAudio('Start', audioDevice, 1, 0, 1);
+    %
+    % % Wait for the audio to finish
+    % offsetTime = PsychPortAudio('Stop', audioDevice, 1, 1);
+    %
+
+    % Record duration time
+    duration = offsetTime-onsetTime;
+
+    timingData3(i).event = event;
+    timingData3(i).onsetTime = onsetTime;
+    timingData3(i).offsetTime = offsetTime;
+    timingData3(i).duration = duration;
+
+end
+
+dateStringBlah = datestr(now, 'yyyymmdd_HHMMSS');
+filename = sprintf('%s_timingData_%s.mat', dateStringBlah, 'story2');
+dirToSave = '../../../TaskTiming/';
+if ~exist("dirToSave", 'dir')
+    mkdir(dirToSave)
+end
+filename = [dirToSave filename];
+% Save timing data to a .mat file
+save(filename, 'timingData3');
 %------------end of Section II--------------------------------------
 
 

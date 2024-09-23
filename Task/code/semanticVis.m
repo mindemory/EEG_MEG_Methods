@@ -151,7 +151,9 @@ filename = [dirToSave filename];
 save(filename, 'timingData');
 
 
-line1 = 'This is the end of the task. Please put down the categories';
+% line1 = 'This is the end of the task. Please put down the categories';
+% line2 = '\n\n you identified from the task. Press [space] to continue when you finish.';
+line1 = 'This is the end of the task. Please say out loud the categories';
 line2 = '\n\n you identified from the task. Press [space] to continue when you finish.';
 
 DrawFormattedText(window, [line1 line2], 'center', 'center', white);
