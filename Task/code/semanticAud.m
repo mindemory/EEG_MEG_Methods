@@ -157,7 +157,7 @@ for i = 1:length(seq)
 
 
     % Fill the audio buffer
-    PsychPortAudio('FillBuffer', audioDevice, stimulus');
+            PsychPortAudio('FillBuffer', audioDevice, stimulus');
 
     % -----------------!!!send trigger for stimulus onset!!!-----------------
 

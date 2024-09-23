@@ -200,7 +200,8 @@ lineWidthPix = 4;
 %-----------visual display setup end---------------------------------
 
 % Define audio device
-audioDevice = PsychPortAudio('Open', [], 1, 1, [], 1);
+FSMan = 24000;
+audioDevice = PsychPortAudio('Open', [], 1, 1, FSMan, 1);
 
 % Set playback volume to 60%
 PsychPortAudio('Volume', audioDevice, 0.6);
@@ -588,7 +589,8 @@ PsychPortAudio('Close', audioDevice);
 %-------------------Section III----------------------------------
 
 % Define audio device
-audioDevice = PsychPortAudio('Open', [], 1, 1, [], 1);
+FSMan = 24000;
+audioDevice = PsychPortAudio('Open', [], 1, 1, FSMan, 1);
 
 % Set playback volume to 60%
 PsychPortAudio('Volume', audioDevice, 0.6);
@@ -731,7 +733,8 @@ PsychPortAudio('Close', audioDevice);
 %------------------start of Section V-----------------------------------
 
 % Define audio device
-audioDevice = PsychPortAudio('Open', [], 1, 1, [], 2);
+FSMan = 24000;
+audioDevice = PsychPortAudio('Open', [], 1, 1, FSMan, 1);
 
 % Set playback volume to 60%
 PsychPortAudio('Volume', audioDevice, 0.6);
@@ -892,7 +895,8 @@ PsychPortAudio('Close', audioDevice);
 
 %--------------------Section VI---------------------------------------
 % Define audio device
-audioDevice = PsychPortAudio('Open', [], 1, 1, [], 1);
+FSMan = 24000;
+audioDevice = PsychPortAudio('Open', [], 1, 1, FSMan, 1);
 
 % Set playback volume to 60%
 PsychPortAudio('Volume', audioDevice, 0.6);
