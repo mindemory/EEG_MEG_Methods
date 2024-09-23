@@ -189,55 +189,13 @@ end
 
 disp('import finished');
 
-
-%-------visual display setup start--------------------------------------
-
-% % Setup Psychtoolbox
-% PsychDefaultSetup(2);
-% InitializePsychSound(1);
-%
-% % Define screen numbers
-% screenNumbers = Screen('Screens');
-% secondaryScreen = max(screenNumbers);
-%
-% % Define black and white
-% white = WhiteIndex(secondaryScreen);
-% black = BlackIndex(secondaryScreen);
-% grey = white / 2;
-%
-% % Open an on screen window on the secondary monitor
-% [window, windowRect] = PsychImaging('OpenWindow', secondaryScreen, grey);
-%
-% % Get the size of the on screen window
-% [screenXpixels, screenYpixels] = Screen('WindowSize', window);
-%
-% % Query the frame duration
-% ifi = Screen('GetFlipInterval', window);
-%
-% % Set waitframes to 1
-% waitframes = 1;
-%
-% % Set up alpha-blending for smooth (anti-aliased) lines
-% Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
-%
-% % Get the centre coordinate of the window
-% [xCenter, yCenter] = RectCenter(windowRect);
-%
-% % Setup the text type for the window
-% %Screen('TextFont', window, 'Ariel');
-% Screen('TextSize', window, 48);
-%
-% % Setup keyboard
-% KbName('UnifyKeyNames');
-%
 % Set up the fixation cross
 fixCrossDimPix = 40;
 xCoords = [-fixCrossDimPix fixCrossDimPix 0 0];
 yCoords = [0 0 -fixCrossDimPix fixCrossDimPix];
 allCoords = [xCoords; yCoords];
 lineWidthPix = 4;
-%
-% disp('visual setup finished')
+
 
 %-----------visual display setup end---------------------------------
 
@@ -250,11 +208,6 @@ PsychPortAudio('Volume', audioDevice, 0.6);
 disp('audio setup finished')
 
 % ----------basic audio setup end---------------------------------------
-
-
-
-
-
 
 
 %--------basic stimulus sequence setup before the task------------------------------
@@ -520,7 +473,6 @@ KbStrokeWait;
 %             seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
 %     end
 % end
-
 
 
 
@@ -940,7 +892,7 @@ PsychPortAudio('Close', audioDevice);
 
 %--------------------Section VI---------------------------------------
 % Define audio device
-audioDevice = PsychPortAudio('Open', [], 1, 1, [], );
+audioDevice = PsychPortAudio('Open', [], 1, 1, [], 1);
 
 % Set playback volume to 60%
 PsychPortAudio('Volume', audioDevice, 0.6);

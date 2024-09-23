@@ -121,7 +121,7 @@ for i = 1:numel(seq)
     elseif strcmp(devType, 'MEG')
         Beeper(stimulus, 0.06, 0.45); % needs to be tested
     else
-        Beeper(stimulus, [], 0.45);
+        Beeper(stimulus, 0.5, 0.45);
     end
 
 

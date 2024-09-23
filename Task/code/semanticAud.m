@@ -128,8 +128,13 @@ for i = 1:length(seq)
     if iscell(stimulus)
         stimulus = cell2mat(stimulus);  % Convert cell array to matrix if necessary
     end
-
+    
     % Check the dimensions of the stimulus
+    % convert mono to stereo:
+%     stimulus = stimulus';
+%     if size(stimulus, 2) == 1
+%         stimulus = [stimulus; stimulus];
+%     end
     disp(size(stimulus));  % Ensure this is a 1xN (mono) or 2xN (stereo) matrix
     % running the stimlus sequence
     % for i = 1:size(finalSequence, 1)
