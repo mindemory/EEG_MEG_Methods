@@ -24,7 +24,7 @@ Screen('Flip', window);
 
 category = cat;
 
-line1 = 'In this task, you will be presented with a set of words.';
+line1 = 'In this task, you will be visually presented with a set of words.';
 line2 = '\n\n Please pay attention to the words presented to you, and try to';
 line3 = '\n\n identify the categories the words fall under. Please bear';
 line4 = '\n\n in mind that the words may come from more than one category.';
