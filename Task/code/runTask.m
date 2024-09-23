@@ -862,17 +862,9 @@ if ~exist("dirToSave", 'dir')
 end
 filename = [dirToSave filename];
 % Save timing data to a .mat file
-save(filename, 'timingData4');
+save(filename, 'timingData3');
 
-line = 'This task is over. Please press [space] to proceed to the next task.';
 
-DrawFormattedText(screen.win, line, 'center', 'center', screen.white);
-
-Screen('Flip', screen.win);
-
-KbStrokeWait;
-
-PsychPortAudio('Close', audioDevice);
 %-------------------end of Section V--------------------------
 
 
@@ -952,17 +944,21 @@ for i = 1:length(random_order)
 end
 
 
-%----------------end of Section V-----------------------------------
+%----------------end of Section VI-----------------------------------
 
 filename = sprintf('%s_taskOrder.mat', date);
-
+dirToSave = '../../../TaskTiming/';
+if ~exist("dirToSave", 'dir')
+    mkdir(dirToSave)
+end
+filename = [dirToSave filename];
 save(filename,'taskNames')
 
 line2_1 = 'This is the end of this task experiment.';
 line2_2 = ' Press [space] to exit.';
 
 % Draw instructions
-DrawFormattedText(screen.win, [line2_1 line2_2], 'center', screenYpixels * 0.25, screen.white);
+DrawFormattedText(screen.win, [line2_1 line2_2], 'center', screen.screenYpixels * 0.25, screen.white);
 
 % Flip to the screen
 Screen('Flip', screen.win);
