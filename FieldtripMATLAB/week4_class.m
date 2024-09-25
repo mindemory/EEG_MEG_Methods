@@ -227,7 +227,7 @@ ylabel('Power')
 title('Power vs Frequency');
 xlim([0 20])
 
-%% SLIDES
+%% SLIDES (break first)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%       CONVOLUTION              %%%%%%%%%%%%%%%%%%%%%%%%
@@ -389,7 +389,7 @@ N_ml = length(t);
 
 % Create the Morlet wavelet (%frequency based on time)
 A = 1 / (sqrt(sigma * sqrt(pi)) * sqrt(f0)); % amplitude scaling for the frequency-specific Morlet wavelet
-morlet_wavelet = exp(2 * 1i * pi * f0 * t) .* exp(-t.^2 / (2 * sigma^2));
+morlet_wavelet = A*exp(2 * 1i * pi * f0 * t) .* exp(-t.^2 / (2 * sigma^2));
 
 figure;
 subplot(3,1,1);
