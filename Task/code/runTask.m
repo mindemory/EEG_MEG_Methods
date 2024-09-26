@@ -3,7 +3,7 @@
 % And has been adapted for this course.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+                                                                                                    
 
 % Initialize Psychtoolbox and set up the experiment environment
 sca; clear; close all; clc;
@@ -472,56 +472,56 @@ KbStrokeWait;
 %-------------------Section I---------------------------------------
 
 % the categories in the block
-% seqFieldsA = fieldnames(audSeq1);
-% seqFieldsV = fieldnames(visSeq1);
-% disp(1)
-% 
-% % same as above
-% labelsFieldsA = fieldnames(audLabels1);
-% labelsFieldsV = fieldnames(visLabels1);
-% disp(2)
-% % categories in the block for ca
-% seqFieldsCa = fieldnames(seqAll.caBlk1.Sequences);
-% labelsFieldsCa = fieldnames(seqAll.caBlk1.Labels);
-% disp(3)
-% % Combine task types with corresponding sequences into a single structure
-% task_sequence_blk = [
-%     struct('task', 'vs', 'sequence', seqFieldsV{1}, 'labels', labelsFieldsV{1}, 'cat', fieldVis1{1}), ...
-%     struct('task', 'vs', 'sequence', seqFieldsV{2}, 'labels', labelsFieldsV{2}, 'cat', fieldVis1{2}), ...
-%     struct('task', 'vs', 'sequence', seqFieldsV{3}, 'labels', labelsFieldsV{3}, 'cat', fieldVis1{3}), ...
-%     struct('task', 'vs', 'sequence', seqFieldsV{4}, 'labels', labelsFieldsV{4}, 'cat', fieldVis1{4}), ...
-%     struct('task', 'as', 'sequence', seqFieldsA{1}, 'labels', labelsFieldsA{1}, 'cat', fieldAud1{1}), ...
-%     struct('task', 'as', 'sequence', seqFieldsA{2}, 'labels', labelsFieldsA{2}, 'cat', fieldAud1{2}), ...
-%     struct('task', 'as', 'sequence', seqFieldsA{3}, 'labels', labelsFieldsA{3}, 'cat', fieldAud1{3}), ...
-%     struct('task', 'as', 'sequence', seqFieldsA{4}, 'labels', labelsFieldsA{4}, 'cat', fieldAud1{4}), ...
-%     struct('task', 'ca', 'sequence', seqFieldsCa{1}, 'labels', labelsFieldsCa{1}, 'cat', []), ...
-%     struct('task', 'ca', 'sequence', seqFieldsCa{2}, 'labels', labelsFieldsCa{2}, 'cat', []), ...
-%     struct('task', 'ca', 'sequence', seqFieldsCa{3}, 'labels', labelsFieldsCa{3}, 'cat', []), ...
-%     struct('task', 'ca', 'sequence', seqFieldsCa{4}, 'labels', labelsFieldsCa{4}, 'cat', []), ...
-%     ];
-% disp(4)
-% % Randomize the order of tasks and sequences
-% random_order = randperm(length(task_sequence_blk));  % Get random order
-% 
-% % Execute the tasks in random order
-% for i = 1:length(random_order)
-%     current_task = task_sequence_blk(random_order(i));
-% 
-% 
-%     % Execute the appropriate task function based on the task type
-%     if strcmp(current_task.task, 'vs')
-%         semanticVis(current_task.cat, visSeq1.(current_task.sequence), visLabels1.(current_task.labels),date, ...
-%             screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType);  % Call visual semantic function
-%     elseif strcmp(current_task.task, 'as')
-%         semanticAud(current_task.cat, audSeq1.(current_task.sequence), audLabels1.(current_task.labels), audioDataDS, fieldAud1, audBlk1, date, ...
-%             screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType);  % Call auditory semantic function
-%     elseif strcmp(current_task.task, 'ca')
-%         classicalAud(current_task.sequence, seqAll.caBlk1.Sequences.(current_task.sequence), ...
-%             seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
-%     end
-% end
-% 
-% PsychPortAudio('Close', audioDevice);
+seqFieldsA = fieldnames(audSeq1);
+seqFieldsV = fieldnames(visSeq1);
+disp(1)
+
+% same as above
+labelsFieldsA = fieldnames(audLabels1);
+labelsFieldsV = fieldnames(visLabels1);
+disp(2)
+% categories in the block for ca
+seqFieldsCa = fieldnames(seqAll.caBlk1.Sequences);
+labelsFieldsCa = fieldnames(seqAll.caBlk1.Labels);
+disp(3)
+% Combine task types with corresponding sequences into a single structure
+task_sequence_blk = [
+    struct('task', 'vs', 'sequence', seqFieldsV{1}, 'labels', labelsFieldsV{1}, 'cat', fieldVis1{1}), ...
+    struct('task', 'vs', 'sequence', seqFieldsV{2}, 'labels', labelsFieldsV{2}, 'cat', fieldVis1{2}), ...
+    struct('task', 'vs', 'sequence', seqFieldsV{3}, 'labels', labelsFieldsV{3}, 'cat', fieldVis1{3}), ...
+    struct('task', 'vs', 'sequence', seqFieldsV{4}, 'labels', labelsFieldsV{4}, 'cat', fieldVis1{4}), ...
+    struct('task', 'as', 'sequence', seqFieldsA{1}, 'labels', labelsFieldsA{1}, 'cat', fieldAud1{1}), ...
+    struct('task', 'as', 'sequence', seqFieldsA{2}, 'labels', labelsFieldsA{2}, 'cat', fieldAud1{2}), ...
+    struct('task', 'as', 'sequence', seqFieldsA{3}, 'labels', labelsFieldsA{3}, 'cat', fieldAud1{3}), ...
+    struct('task', 'as', 'sequence', seqFieldsA{4}, 'labels', labelsFieldsA{4}, 'cat', fieldAud1{4}), ...
+    struct('task', 'ca', 'sequence', seqFieldsCa{1}, 'labels', labelsFieldsCa{1}, 'cat', []), ...
+    struct('task', 'ca', 'sequence', seqFieldsCa{2}, 'labels', labelsFieldsCa{2}, 'cat', []), ...
+    struct('task', 'ca', 'sequence', seqFieldsCa{3}, 'labels', labelsFieldsCa{3}, 'cat', []), ...
+    struct('task', 'ca', 'sequence', seqFieldsCa{4}, 'labels', labelsFieldsCa{4}, 'cat', []), ...
+    ];
+disp(4)
+% Randomize the order of tasks and sequences
+random_order = randperm(length(task_sequence_blk));  % Get random order
+
+% Execute the tasks in random order
+for i = 1:length(random_order)
+    current_task = task_sequence_blk(random_order(i));
+
+
+    % Execute the appropriate task function based on the task type
+    if strcmp(current_task.task, 'vs')
+        semanticVis(current_task.cat, visSeq1.(current_task.sequence), visLabels1.(current_task.labels),date, ...
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType);  % Call visual semantic function
+    elseif strcmp(current_task.task, 'as')
+        semanticAud(current_task.cat, audSeq1.(current_task.sequence), audLabels1.(current_task.labels), audioDataDS, fieldAud1, audBlk1, date, ...
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType);  % Call auditory semantic function
+    elseif strcmp(current_task.task, 'ca')
+        classicalAud(current_task.sequence, seqAll.caBlk1.Sequences.(current_task.sequence), ...
+            seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
+    end
+end
+
+PsychPortAudio('Close', audioDevice);
 
 %------------------end of Section I------------------------------
 
