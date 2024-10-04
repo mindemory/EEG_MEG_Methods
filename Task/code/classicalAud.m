@@ -19,7 +19,7 @@
 %   specific for classicalAud
 
 function [timingData,taskNames] = classicalAud(cat, seq, labels, ...
-    dateString, window, white, allCoords, lineWidthPix, xCenter, yCenter, taskNames, devType)
+    dateString, window, white, allCoords, lineWidthPix, xCenter, yCenter, taskNames, devType, port)
 
 % Draw loading instruction to wait for sequence creation
 line = 'loading ...';
@@ -55,7 +55,7 @@ Screen('Flip', window);
 % initialize data structure to store timing data
 timingData = struct();
 
-WaitSecs(2);
+KbStrokeWait;
 
 % -----------------!!!send trigger for starting!!!-----------------
 % write(port, 1,"uint8");
