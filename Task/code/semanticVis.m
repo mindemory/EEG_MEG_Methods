@@ -14,14 +14,13 @@
 % the following arguments are general
 
 function [timingData, taskNames] = semanticVis(cat, seq, labels, ...
-    dateString, window, white, allCoords, lineWidthPix, xCenter, yCenter, taskNames, devType)
+    dateString, window, white, allCoords, lineWidthPix, xCenter, yCenter, taskNames, devType, port)
 
 % Draw loading instruction to wait for sequence creation
 line = 'loading ...';
 
 DrawFormattedText(window, line, 'center', 'center', white);
 Screen('Flip', window);
-
 category = cat;
 
 line1 = 'In this task, you will be visually presented with a set of words.';

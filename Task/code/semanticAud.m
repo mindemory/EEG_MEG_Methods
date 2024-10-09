@@ -16,7 +16,7 @@
 % the following arguments are general
 
 function [timingData, taskNames] = semanticAud(cat, seq, labels, data, fullfield, cats, dateString, ...
-    window, white, allCoords, lineWidthPix, xCenter, yCenter, audioDevice, taskNames, devType)
+    window, white, allCoords, lineWidthPix, xCenter, yCenter, audioDevice, taskNames, devType, port)
 
 % Draw loading instruction to wait for sequence creation
 line = 'loading ...';
@@ -84,7 +84,7 @@ else
 end
 Screen('Flip', window);
 
-WaitSecs(2);
+KbStrokeWait;
 
 % initialize data structure to store timing data
 timingData = struct();

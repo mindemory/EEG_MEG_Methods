@@ -1,12 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This code is created by Brian Yan (by2139@nyu.edu)
-% And has been adapted for this course.
+% And has been adapted for this course by Mrugank Dake
+% (mrugank.dake@nyu.edu)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-                                                                                                    
-
+                                                                                        
 % Initialize Psychtoolbox and set up the experiment environment
-sca; clear; close all; clc;
+clear; close all; clc;
 
 % Check the system running on: currently accepted: syndrome, tmsubuntu
 [ret, hostname] = system('hostname');
@@ -21,14 +20,23 @@ if strcmp(hostname, 'mindemory.local') || strcmp(hostname, '10-17-200-14.dynapoo
     Screen('Preference', 'SkipSyncTests', 1)
     PsychDefaultSetup(2);
     parameters.viewingDistance = 55;
-    devType = 'neither';
+    devType = 'neither';   
 elseif strcmp(hostname, 'meg-stim-mac.psych.nyu.edu')
     addpath(genpath('/Applications/Psychtoolbox'))
-    parameters.isDemoMode = false                          ;
+    parameters.isDemoMode = false;
     Screen('Preference', 'SkipSyncTests', 1)
     PsychDefaultSetup(2);
     parameters.viewingDistance = 25; % check once
     devType = 'MEG';
+elseif strcmp(hostname, 'visioncore01m.psych.nyu.edu')
+    addpath(genpath('/Applications/Psychtoolbox'))
+    addpath(genpath('/Users/michelmannlab/Documents/BioSemiTrigger'));
+    port = init_trigger;
+    parameters.isDemoMode = false;
+    Screen('Preference', 'SkipSyncTests', 1)
+    PsychDefaultSetup(2);
+    parameters.viewingDistance = 25; % check once
+    devType = 'EEG';
 end
 stimDir = '../stimulus';
 screen = initScreen(parameters, devType);
@@ -511,13 +519,13 @@ for i = 1:length(random_order)
     % Execute the appropriate task function based on the task type
     if strcmp(current_task.task, 'vs')
         semanticVis(current_task.cat, visSeq1.(current_task.sequence), visLabels1.(current_task.labels),date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType);  % Call visual semantic function
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType, port);  % Call visual semantic function
     elseif strcmp(current_task.task, 'as')
         semanticAud(current_task.cat, audSeq1.(current_task.sequence), audLabels1.(current_task.labels), audioDataDS, fieldAud1, audBlk1, date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType);  % Call auditory semantic function
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType, port);  % Call auditory semantic function
     elseif strcmp(current_task.task, 'ca')
         classicalAud(current_task.sequence, seqAll.caBlk1.Sequences.(current_task.sequence), ...
-            seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
+            seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType, port); % Call classical auditory
     end
 end
 
@@ -674,7 +682,7 @@ dateStringBlah = datestr(now, 'yyyymmdd_HHMMSS');
 filename = sprintf('%s_timingData_%s.mat', dateStringBlah, 'story2');
 dirToSave = '../../../TaskTiming/';
 if ~exist("dirToSave", 'dir')
-    mkdir(dirToSave)
+    mkdir(dirToSave)  
 end
 filename = [dirToSave filename];
 % Save timing data to a .mat file
@@ -756,13 +764,13 @@ for i = 1:length(random_order)
     % Execute the appropriate task function based on the task type
     if strcmp(current_task.task, 'vs')
         semanticVis(current_task.cat, visSeq1.(current_task.sequence), visLabels1.(current_task.labels),date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType);  % Call visual semantic function
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType, port);  % Call visual semantic function
     elseif strcmp(current_task.task, 'as')
         semanticAud(current_task.cat, audSeq1.(current_task.sequence), audLabels1.(current_task.labels), audioDataDS, fieldAud1, audBlk1, date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType);  % Call auditory semantic function
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType, port);  % Call auditory semantic function
     elseif strcmp(current_task.task, 'ca')
         classicalAud(current_task.sequence, seqAll.caBlk1.Sequences.(current_task.sequence), ...
-            seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
+            seqAll.caBlk1.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType, port); % Call classical auditory
     end
 end
 %-----------------end of Section III---------------------------
@@ -826,13 +834,13 @@ for i = 1:length(random_order)
     % Execute the appropriate task function based on the task type
     if strcmp(current_task.task, 'vs')
         semanticVis(current_task.cat, visSeq2.(current_task.sequence), visLabels2.(current_task.labels),date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType);  % Call visual semantic function
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType, port);  % Call visual semantic function
     elseif strcmp(current_task.task, 'as')
         semanticAud(current_task.cat, audSeq2.(current_task.sequence), audLabels2.(current_task.labels), audioDataDS, fieldAud2, audBlk2, date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType);  % Call auditory semantic function
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType, port);  % Call auditory semantic function
     elseif strcmp(current_task.task, 'ca')
         classicalAud(current_task.sequence, seqAll.caBlk2.Sequences.(current_task.sequence), ...
-            seqAll.caBlk2.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
+            seqAll.caBlk2.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType, port); % Call classical auditory
     end
 end
 
@@ -1054,13 +1062,13 @@ for i = 1:length(random_order)
     % Execute the appropriate task function based on the task type
     if strcmp(current_task.task, 'vs')
         semanticVis(current_task.cat, visSeq2.(current_task.sequence), visLabels2.(current_task.labels),date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType);  % Call visual semantic function
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType, port);  % Call visual semantic function
     elseif strcmp(current_task.task, 'as')
         semanticAud(current_task.cat, audSeq2.(current_task.sequence), audLabels2.(current_task.labels), audioDataDS, fieldAud2, audBlk2, date, ...
-            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType);  % Call auditory semantic function
+            screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, audioDevice, taskNames, devType, port);  % Call auditory semantic function
     elseif strcmp(current_task.task, 'ca')
         classicalAud(current_task.sequence, seqAll.caBlk2.Sequences.(current_task.sequence), ...
-            seqAll.caBlk2.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType); % Call classical auditory
+            seqAll.caBlk2.Labels.(current_task.labels), date, screen.win, screen.white, allCoords, lineWidthPix, screen.xCenter, screen.yCenter, taskNames, devType, port); % Call classical auditory
     end
 end
 
