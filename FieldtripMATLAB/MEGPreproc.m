@@ -99,8 +99,7 @@ cfg.preproc.hpfiltord = 4;
 cfg_out_allArt = ft_databrowser(cfg, raw_meg_data);
 
 %% second step remove artifacts that could be eye related
-
-cfg_out_noEye = ft_databrowser(cfg_out_allArt, rawData);
+cfg_out_noEye = ft_databrowser(cfg_out_allArt, raw_meg_data);
 
 
 %%
