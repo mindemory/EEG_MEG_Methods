@@ -45,11 +45,11 @@ all_data = ft_selectdata(cfg, all_data);
 % load in artifactual samples here and use them
 
 % sampling info in raw file corresponding to data
-si_vector = [eeg.sampleinfo(1,1):eeg.sampleinfo(1,2), ...
-    eeg.sampleinfo(2,1):eeg.sampleinfo(2,2)];
-
-
-dummy = [1:10, 158:190 ];
+% si_vector = [eeg.sampleinfo(1,1):eeg.sampleinfo(1,2), ...
+%     eeg.sampleinfo(2,1):eeg.sampleinfo(2,2)];
+% 
+% 
+% dummy = [1:10, 158:190 ];
 
 %% inspect the data
 cfg = [];
@@ -57,9 +57,9 @@ cfg.blocksize = 10;
 cfg.preproc.hpfilter = 'yes';
 cfg.preproc.hpfreq = 0.5;
 ft_databrowser(cfg, all_data);
-cfg = [];
-cfg.channel = all_data.label([1:14, 16:157]);
-all_data = ft_selectdata(cfg, all_data);
+% cfg = [];
+% cfg.channel = all_data.label([1:14, 16:157]);
+% all_data = ft_selectdata(cfg, all_data);
 %% do a pca manually
 
 
