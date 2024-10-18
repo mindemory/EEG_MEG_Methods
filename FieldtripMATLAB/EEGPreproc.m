@@ -30,8 +30,14 @@ cfg.dataset = fullfile(recRoot, bdfFiles{1});
 data = ft_preprocessing(cfg);
 
 % Visualize the data
+% cfg = [];
+% cfg.viewmode = 'vertical';
+% cfg.preproc.hpfilter = 'yes';
+% cfg.preproc.hpfreq = 0.5;
+% ft_databrowser(cfg, data)
+
+%% Epoch the data
 cfg = [];
-cfg.viewmode = 'vertical';
-cfg.preproc.hpfilter = 'yes';
-cfg.preproc.hpfreq = 0.5;
-ft_databrowser(cfg, data)
+cfg.trialfun = 'ft_trialfun_general';
+cfg.dataset = fullfile(recRoot, bdfFiles{1});
+cfg_trl = ft_definetrial(cfg);
