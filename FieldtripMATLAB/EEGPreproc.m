@@ -5,7 +5,7 @@ mydir = pwd;
 path_parts = strsplit(mydir, filesep);
 fieldtrip_path = fullfile(filesep, path_parts{1:end-1}, 'fieldtrip');
 
-if ~ismac & ~ispc
+if ~ismac && ~ispc
     dataPath = fullfile(filesep, 'scratch', 'work', 'courses', ...
         'PSYCH-GA-3405-2024fa');
     % TODO
