@@ -129,7 +129,7 @@ def fix_missing_flags(events_df):
 
                 # Insert a new row before trl9Idx
                 sample_onset_avg = int((events_df.loc[trl9Idx, 'sampleOnset'] + events_df.loc[trl9Idx-1, 'sampleOnset']) / 2)
-                time_onset_avg = (events_df.timeOnset[trl9Idx] + events_df.timeOnset[trl9Idx-1]) / 2
+                time_onset_avg = (events_df.onset[trl9Idx] + events_df.onset[trl9Idx-1]) / 2
                 last_trigger_code = events_df[(events_df['blockNumber'] <= blkIdx) & (events_df['trialNumber'] == 0)]['value'].values[-1]
                 
                 # Get trialOverBlocks from previous row and blockType from trlIdx row
