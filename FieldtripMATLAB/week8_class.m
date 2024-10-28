@@ -46,12 +46,13 @@ ft_defaults;
 groupName = 'GroupD'; % Change group name to analyze different dataset (valid IDs: GroupA, GroupC, GroupD)
 userName = 'mrugank'; % Make sure to ensure that you are writing to your derivatives 
 taskName = 'oddball';
+
 % Get subject code for your group
 groupMap = struct('GroupA', '001', 'GroupC', '003', 'GroupD', '004');
 subjCode = groupMap.(groupName);
 
 dataPath = fullfile(eegRoot, ['sub-' subjCode], 'eeg');
-derivPath = fullfile(eegRoot, ['derivatives_' userName], 'preprocessing', ...
+derivPath = fullfile(eegRoot, 'derivatives', userName, 'preprocessing', ...
                     ['sub-' subjCode]);
 
 if ~exist(derivPath,'dir'); mkdir(derivPath); end

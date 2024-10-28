@@ -13,7 +13,7 @@ If you don't have MATLAB installed, follow these steps:
 ### 2. FieldTrip Toolbox Installation
 FieldTrip is a MATLAB toolbox for MEG and EEG analysis.
 1. Clone the FieldTrip repository:
-    ```bash
+    ```bashss
     git clone https://github.com/fieldtrip/fieldtrip.git
     ```
 2. Add FieldTrip to your MATLAB path:
@@ -75,6 +75,7 @@ MNE is a Python package for processing and analyzing MEG and EEG data.
     conda install matplotlib seaborn pandas scikit-learn numpy
     conda install conda-forge::nibabel nilearn
     pip install mne
+    pip install mne_bids
     pip install PyQt5
     ```
 

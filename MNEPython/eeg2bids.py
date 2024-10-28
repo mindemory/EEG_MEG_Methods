@@ -95,8 +95,8 @@ def fix_missing_flags(events_df):
 
                 # Insert a new row before trl31Idx
                 sample_onset_avg = int((events_df.loc[trl31Idx, 'sampleOnset'] + events_df.loc[trl31Idx-1, 'sampleOnset']) / 2)
-                time_onset_avg = (events_df.timeOnset[trl31Idx] + events_df.timeOnset[trl31Idx-1]) / 2
-                last_trigger_code = events_df[(events_df['blockNumber'] <= blkIdx) & (events_df['trialNumber'] == 0)]['trigger_codes'].values[-1]
+                time_onset_avg = (events_df.onset[trl31Idx] + events_df.onset[trl31Idx-1]) / 2
+                last_trigger_code = events_df[(events_df['blockNumber'] <= blkIdx) & (events_df['trialNumber'] == 0)]['value'].values[-1]
                 
                 # Get trialOverBlocks from previous row and blockType from trlIdx row
                 trial_over_blocks_prev = events_df.loc[trl31Idx-1, 'trialoverBlocks']
@@ -105,13 +105,13 @@ def fix_missing_flags(events_df):
 
                 new_row = {
                     'sampleOnset': sample_onset_avg,
-                    'timeOnset': time_onset_avg,
-                    'offset': 0.0,
-                    'trigger_codes': last_trigger_code,
+                    'onset': time_onset_avg,
+                    'duration': 0.0,
+                    'value': last_trigger_code,
                     'blockNumber': blkIdx + 1,
                     'trialNumber': 0,
                     'trialoverBlocks': trial_over_blocks_prev,
-                    'trlType': None,
+                    'trial_type': None,
                     'blockType': block_type_current
                 }
                 events_df = pd.concat([events_df.iloc[:trl31Idx], pd.DataFrame([new_row]), events_df.iloc[trl31Idx:]]).reset_index(drop=True)
@@ -130,7 +130,7 @@ def fix_missing_flags(events_df):
                 # Insert a new row before trl9Idx
                 sample_onset_avg = int((events_df.loc[trl9Idx, 'sampleOnset'] + events_df.loc[trl9Idx-1, 'sampleOnset']) / 2)
                 time_onset_avg = (events_df.timeOnset[trl9Idx] + events_df.timeOnset[trl9Idx-1]) / 2
-                last_trigger_code = events_df[(events_df['blockNumber'] <= blkIdx) & (events_df['trialNumber'] == 0)]['trigger_codes'].values[-1]
+                last_trigger_code = events_df[(events_df['blockNumber'] <= blkIdx) & (events_df['trialNumber'] == 0)]['value'].values[-1]
                 
                 # Get trialOverBlocks from previous row and blockType from trlIdx row
                 trial_over_blocks_prev = events_df.loc[trl9Idx-1, 'trialoverBlocks']
@@ -139,13 +139,13 @@ def fix_missing_flags(events_df):
 
                 new_row = {
                     'sampleOnset': sample_onset_avg,
-                    'timeOnset': time_onset_avg,
-                    'offset': 0.0,
-                    'trigger_codes': last_trigger_code,
+                    'onset': time_onset_avg,
+                    'duration': 0.0,
+                    'value': last_trigger_code,
                     'blockNumber': blkIdx + 1,
                     'trialNumber': 0,
                     'trialoverBlocks': trial_over_blocks_prev,
-                    'trlType': None,
+                    'trial_type': None,
                     'blockType': block_type_current
                 }
                 events_df = pd.concat([events_df.iloc[:trl9Idx], pd.DataFrame([new_row]), events_df.iloc[trl9Idx:]])
@@ -163,7 +163,7 @@ def addStimulusMeta(events_df, timeStampsRoot):
     events_df['stimulusName'] = None
     events_df['stimulusDuration'] = None
     events_df['blockTypeActual'] = None
-    events_df['trigger_codes_fixed'] = events_df['trigger_codes']
+    events_df['value_fixed'] = events_df['value']
 
     maxBlocks = events_df['blockNumber'].max()
     for i, blkIdx in enumerate(range(1, maxBlocks+1)):
@@ -172,16 +172,16 @@ def addStimulusMeta(events_df, timeStampsRoot):
         events_df.loc[trlIdx, 'stimulusCategory'] = categories[i]
         if blkTypeActual[i] == 'saud':
             events_df.loc[trlIdx, 'blockTypeActual'] = 'semanticAud'
-            events_df.loc[trlIdx[0], 'trigger_codes_fixed'] = 4
+            events_df.loc[trlIdx[0], 'value_fixed'] = 4
         elif blkTypeActual[i] == 'svis':
             events_df.loc[trlIdx, 'blockTypeActual'] = 'semanticVis'
-            events_df.loc[trlIdx[0], 'trigger_codes_fixed'] = 2
+            events_df.loc[trlIdx[0], 'value_fixed'] = 2
         elif blkTypeActual[i] == 'caud':
             events_df.loc[trlIdx, 'blockTypeActual'] = 'classicalAud'
-            events_df.loc[trlIdx[0], 'trigger_codes_fixed'] = 1
+            events_df.loc[trlIdx[0], 'value_fixed'] = 1
         elif blkTypeActual[i] == 'timingData':
             events_df.loc[trlIdx, 'blockTypeActual'] = 'story'
-            events_df.loc[trlIdx[0], 'trigger_codes_fixed'] = 8
+            events_df.loc[trlIdx[0], 'value_fixed'] = 8
 
         # Load the timeStamps file
         timeStampsFile = os.path.join(timeStampsRoot, timeStampsFiles[i])
@@ -273,20 +273,20 @@ if status_channel in raw.ch_names:
 
     events_df = pd.DataFrame({
         'sampleOnset': event_samples,
-        'timeOnset': event_times,
-        'offset': [0.0] * len(event_times),
-        'trigger_codes': event_values,
+        'onset': event_times,
+        'duration': [0.0] * len(event_times),
+        'value': event_values,
         'blockNumber': block_numbers,
         'trialNumber': trial_numbers_within_block,
         'trialoverBlocks': trial_numbers_over_blocks,
-        'trlType': trl_types,
+        'trial_type': trl_types,
         'blockType': block_types,
     })
 
     # Set column trigger_codes to be of type int
-    events_df['trigger_codes'] = events_df['trigger_codes'].astype(int)
+    events_df['value'] = events_df['value'].astype(int)
     valid_trigger_codes = [1, 2, 4, 8, 16, 64, 128]
-    events_df = events_df[events_df['trigger_codes'].isin(valid_trigger_codes)]
+    events_df = events_df[events_df['value'].isin(valid_trigger_codes)]
 
     # Reset index
     events_df.reset_index(drop=True, inplace=True)
