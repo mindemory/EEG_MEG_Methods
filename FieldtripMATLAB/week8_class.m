@@ -43,7 +43,7 @@ addpath(fullfile(fieldtrip_path));
 ft_defaults;
 
 %% Load data
-groupName = 'GroupD'; % Change group name to analyze different dataset (valid IDs: GroupA, GroupC, GroupD)
+groupName = 'GroupA'; % Change group name to analyze different dataset (valid IDs: GroupA, GroupC, GroupD)
 userName = 'mrugank'; % Make sure to ensure that you are writing to your derivatives 
 taskName = 'oddball';
 
@@ -115,10 +115,19 @@ cfg.ylim = [-10 10];
 cfg.blocksize = 10;
 ft_databrowser(cfg, data_avg);
 %% now identify bad channels
-%'B7, 9, 25?, C18?, 'G30'? !F2 E5
-bad_channels = {'A26', 'B2', 'B3', 'B4', 'B7' 'B8',...
-    'B19', 'C9', 'C30','D15','E5', 'F2' ,'F22',...
-    'G25', 'G29'};
+if strcmp(groupName, 'GroupD')
+    %'B7, 9, 25?, C18?, 'G30'? !F2 E5
+    bad_channels = {'A26', 'B2', 'B3', 'B4', 'B7' 'B8',...
+        'B19', 'C9', 'C30','D15','E5', 'F2' ,'F22',...
+        'G25', 'G29'};
+elseif strcmp(groupName, 'GroupA')
+    % Added by Mrugank
+    % D22-32 & E7-16 & E23-32 & F6-15 & F25-32 (blinks)
+    bad_channels = {'B1', 'B2', 'B8', 'B29', 'B30', ...
+        'C6', 'C7', 'C11', 'C18', 'C19', 'C32', 'D7', 'D8', 'D9', 'D10', ...
+        'D13', 'D14', 'D21', 'D27', 'G30', 'H1', 'H5', 'H11', 'H12', 'H14', 'H15', 'H16', ...
+        };
+end
 % go back one step and interpolate
 % then re-reference again!
 % then epoch the data
@@ -136,6 +145,11 @@ cfg.method = 'weighted';
 cfg.neighbours = neighbours;
 cfg.badchannel = bad_channels; % List your bad channels
 data_interp = ft_channelrepair(cfg, data_raw);
+
+% Save data interp
+save(fullfile(derivPath, [saveRoot 'interp.mat']), ...
+    'data_interp', '-v7.3');
+
 %% redo the average reference
 cfg = [];
 cfg.channel = data_raw.label(1:n_elec); 
@@ -183,6 +197,8 @@ cfg.ylim = [-10 10];
 cfg.blocksize = 10;
 cfg.eogscale = 0.8; % Four channels are eye channels
 cfg_art = ft_databrowser(cfg, data_combined);
+
+save(fullfile(derivPath, ['sub-' subjCode '_task-' taskName '_cfg_art.mat']), 'cfg_art', '-v7.3')
 %% compute one big ICA ...
 artifact_def = cfg_art.artfctdef.visual.artifact;
 art_vec = zeros(1, n_sample);
