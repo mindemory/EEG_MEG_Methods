@@ -311,7 +311,7 @@ cfg= [];
 cfg.xlim        = [-0.3 1.0];
 cfg.channel     = 'B17';
 ft_singleplotER(cfg,tl_vis);
-
+hold on;
 % Scale LDA source output to fit the channel plot
 yl= ylim;
 hold all
@@ -323,7 +323,7 @@ legend({cfg.channel, avg_LDA.label{1}})
 title('Event-related potential (best electrode vs. spatial filter)');
 
 %% we can use this to analyze single trial responses
-plot(data_lda.time{1}, cell2mat(data_lda.trial(1:50)')', 'k')
+plot(data_lda.time{1}, cell2mat(data_best.trial(1:50)')', 'k')
 
 %% select best electrode data
 cfg = [];
