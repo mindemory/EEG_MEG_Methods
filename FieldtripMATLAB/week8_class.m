@@ -115,12 +115,12 @@ cfg.ylim = [-10 10];
 cfg.blocksize = 10;
 ft_databrowser(cfg, data_avg);
 %% now identify bad channels
-if strcmp(groupName, 'GroupD')
+if strcmp(subjCode, '004')
     %'B7, 9, 25?, C18?, 'G30'? !F2 E5
     bad_channels = {'A26', 'B2', 'B3', 'B4', 'B7' 'B8',...
         'B19', 'C9', 'C30','D15','E5', 'F2' ,'F22',...
         'G25', 'G29'};
-elseif strcmp(groupName, 'GroupA')
+elseif strcmp(subjCode, '001')
     % Added by Mrugank
     % D22-32 & E7-16 & E23-32 & F6-15 & F25-32 (blinks)
     bad_channels = {'B1', 'B2', 'B8', 'B29', 'B30', ...
@@ -248,9 +248,15 @@ data_nan.trial{1}(:,art_vec==1)  = nan;
 
 % compute the ICA on masked+filtered data
 cfg = [];
-cfg.method = 'runica';
+% cfg.method = 'runica';
+cfg.method = 'fastica';
 cfg.numcomponent= rnk;
 data_comp = ft_componentanalysis(cfg, data_nan);
+
+unmixing_eye = data_comp.unmixing;  
+% 
+% % Save the unmixing matrix
+save(fullfile(derivPath, ['sub-' subjCode '_task-' taskName '_unmixing_eye.mat']), 'unmixing_eye', '-v7.3')
 %% add eye channels to layout
 
 % add eye positions to layout
@@ -270,6 +276,7 @@ cfg.layout = layeye;
 % cfg.preproc.hpfreq = 0.5;
 
 cfg.viewmode = 'component';
+cfg.ylim = [-100, 100];
 ft_databrowser(cfg, data_comp);
 
 % reject 1, 3(pulse),  10?hz-eye and 13

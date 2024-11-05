@@ -13,6 +13,15 @@ bids_root = '/Users/mrugankdake/Library/CloudStorage/GoogleDrive-mdd9787@nyu.edu
 if not os.path.exists(bids_root):
     os.makedirs(bids_root)
 groupName = 'GroupA'
+# Set the subject ID and task name
+if groupName[-1] == 'A':
+    subject_id = '001'
+elif groupName[-1] == 'B':
+    subject_id = '002'
+elif groupName[-1] == 'C':
+    subject_id = '003'
+elif groupName[-1] == 'D':
+    subject_id = '004'
 recRoot = os.path.join(rootPath, groupName, 'Recording')
 timeStampsRoot = os.path.join(rootPath, groupName, 'TimeStamps')
 
