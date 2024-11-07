@@ -20,6 +20,7 @@ else
 end
 
 
+
 % Add fieldtrip to path
 addpath(fullfile(fieldtrip_path));
 ft_defaults;
