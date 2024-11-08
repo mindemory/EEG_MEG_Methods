@@ -28,7 +28,7 @@ ft_defaults;
 sjs = ...
     ['004']; % todo change to make BIDS compliant
 %%
-
+dataPath = '/Users/mrugankdake/Library/CloudStorage/GoogleDrive-mdd9787@nyu.edu/My Drive/Coursework/EEG MEG methods/ClassData/EEGBids';
 acq = '';
 code_ = sjs(1,:); % pick one subject
 
@@ -50,73 +50,31 @@ cfg.continuous = 'yes';
 hdr = ft_read_header(cfg.dataset);
 
 %% LOAD IN ELEC AND HEADSHAPE
-opts = delimitedTextImportOptions("NumVariables", 7);
-% Specify range and delimiter
-opts.DataLines = [2, Inf];
-opts.Delimiter = "\t";
-% Specify column names and types
-opts.VariableNames = ["name1", "x1", "y1", "z1", "Var5", "Var6", "Var7"];
-opts.SelectedVariableNames = ["name1", "x1", "y1", "z1"];
-opts.VariableTypes = ["string", "double", "double", "double", "string", "string", "string"];
+tbl = readtable(fullfile(eeg_pth_, ['sub-' code_ '_electrodes.tsv']), 'FileType', 'text');
 
-% Specify file level properties
-opts.ExtraColumnsRule = "ignore";
-opts.EmptyLineRule = "read";
-
-% Specify variable properties
-opts = setvaropts(opts, ["name1", "Var5", "Var6", "Var7"], "WhitespaceRule", "preserve");
-opts = setvaropts(opts, ["name1", "Var5", "Var6", "Var7"], "EmptyFieldRule", "auto");
-tbl = readtable(fullfile(eeg_pth_, ['sub-' code_ '_electrodes.tsv']), opts);
-
-%% Keep the electrode positions
+% Keep the electrode positions
 n_elec = 256;
 elec = [];
 elec.label = hdr.label(1:n_elec);
 elec.elecpos = ...
-    [tbl.x1(1:n_elec), ...
-    tbl.y1(1:n_elec), ...
-    tbl.z1(1:n_elec)];
+    [tbl.x(1:n_elec), ...
+    tbl.y(1:n_elec), ...
+    tbl.z(1:n_elec)];
 elec.chanpos = elec.elecpos;
 elec.unit = 'mm';
 n_elec = size(elec.elecpos,1);
 %% read in the headhape too
-opts = delimitedTextImportOptions("NumVariables", 6);
-
-% Specify range and delimiter
-opts.DataLines = [2, Inf];
-opts.Delimiter = "\t";
-
-% Specify column names and types
-opts.VariableNames = ["X", "y", "z", "label", "VarName5", "VarName6"];
-opts.VariableTypes = ["double", "double", "double", "categorical", "string", "string"];
-
-% Specify file level properties
-opts.ExtraColumnsRule = "ignore";
-opts.EmptyLineRule = "read";
-
 % Specify variable properties
-opts = setvaropts(opts, ["VarName5", "VarName6"], "WhitespaceRule", "preserve");
-opts = setvaropts(opts, ["label", "VarName5", "VarName6"], "EmptyFieldRule", "auto");
+tbl = readtable(fullfile(anat_pth_, ['sub-' code_ '_headshape.tsv']), 'FileType', 'text');
+tbl.Properties.VariableNames = {'Label', 'X', 'Y', 'Z'};
 
-% Specify variable properties
-tbl = readtable(fullfile(anat_pth_, ['sub-' code_ '_headshape.tsv']), opts);
-%%  headshape information + fiducials
+%  headshape information + fiducials
 % Step 2: Extract the relevant data
-headshape.pos = [tbl.X, tbl.y, tbl.z];
+headshape.pos = [tbl.X, tbl.Y, tbl.Z] * 10;
 
 % Step 3: Create the FieldTrip headshape structure
 headshape.unit = 'mm'; % or 'cm', depending on your data
-headshape.label = cell(size(headshape.pos,1),1); % add labels if available
-n_hs = numel(headshape.label);
-for ll = 1: numel(headshape.label)
-    if ll < 4; headshape.label{ll}; % skip... = string(tbl.label(ll));
-    else
-        headshape.label{ll} = 'extra';
-    end
-end
-headshape.label{1} = 'na';
-headshape.label{2} = 'lpa';
-headshape.label{3} = 'rpa';
+headshape.label = tbl.Label;
 %% Visualize the headshape and electrodes
 ft_plot_headshape(headshape);
 hold on;
@@ -177,9 +135,12 @@ ft_plot_sens(elec_unaligned, 'facecolor', ...
 %% first align the electrodes to the MRI
 
 % best to read these out from MRICroGL
-nas_vox  =  [96, 219, 135];%
-lpa_vox =  [12 122 93];% 
-rpa_vox =  [178 120 96];%
+% nas_vox  =  [96, 219, 135];%
+% lpa_vox =  [12 122 93];% 
+% rpa_vox =  [178 120 96];%
+nas_vox = [98 227 95];
+lpa_vox = [12 142 67];
+rpa_vox = [176 131 64];
 transm = mri_orig.transform;
 % bring the fiducials from voxel-space to headspace
 nas = ft_warp_apply(transm, nas_vox, 'homogenous');
@@ -221,7 +182,7 @@ elec_mri.elecpos = [
   lpa
   rpa
   ];
-elec_mri.label = {'na', 'lpa', 'rpa'};
+elec_mri.label = {'NA', 'LPA', 'RPA'};
 elec_mri.unit  = 'mm';
 
 % coregister the electrodes to the MRI using fiducials
@@ -230,7 +191,7 @@ cfg.method   = 'fiducial';
 cfg.template = elec_mri;
 cfg.elec     = elec_unaligned;
 cfg.feedback = 'yes';
-cfg.fiducial = {'na', 'lpa', 'rpa'};
+cfg.fiducial = {'NA', 'LPA', 'RPA'};
 %red before /magenta after /blue mri reference
 elec_aligned = ft_electroderealign(cfg);
 
