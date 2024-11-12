@@ -71,11 +71,13 @@ tbl.Properties.VariableNames = {'Label', 'X', 'Y', 'Z'};
 
 %  headshape information + fiducials
 % Step 2: Extract the relevant data
-headshape.pos = [tbl.X, tbl.Y, tbl.Z] * 10;
-
+tmp_pos = [tbl.X, tbl.Y, tbl.Z] * 10;;
+pos_new = tmp_pos(4:end,:);
+pos_new(1:3, :) = (tmp_pos(1:3,:) + tmp_pos(4:6,:))./2;
+headshape.pos = pos_new;
 % Step 3: Create the FieldTrip headshape structure
 headshape.unit = 'mm'; % or 'cm', depending on your data
-headshape.label = tbl.Label;
+headshape.label = tbl.Label(4:end);
 %% Visualize the headshape and electrodes
 ft_plot_headshape(headshape);
 hold on;
@@ -139,9 +141,9 @@ ft_plot_sens(elec_unaligned, 'facecolor', ...
 % nas_vox  =  [96, 219, 135];%
 % lpa_vox =  [12 122 93];% 
 % rpa_vox =  [178 120 96];%
-nas_vox = [98 227 95];
-lpa_vox = [12 142 67];
-rpa_vox = [176 131 64];
+nas_vox = [99 219 128];
+lpa_vox = [10 123 92];
+rpa_vox = [182 123 92];
 transm = mri_orig.transform;
 % bring the fiducials from voxel-space to headspace
 nas = ft_warp_apply(transm, nas_vox, 'homogenous');
@@ -167,34 +169,45 @@ rpa = ft_warp_apply(transm, rpa_vox, 'homogenous');
 %% 
 %% check if the mri has been scaled
 % Compute the scaling factors
-scaling_factors = sqrt(sum(transm(1:3, 1:3).^2, 1));
-
-% Display the scaling factors
-disp('Scaling factors:');
-disp(scaling_factors);
-%% scale the elec to MRI?
-elec_unaligned.elecpos = ...
-    elec_unaligned.elecpos./scaling_factors;
-elec_unaligned.chanpos = elec_unaligned.elecpos;
+% scaling_factors = sqrt(sum(transm(1:3, 1:3).^2, 1));
+% 
+% % Display the scaling factors
+% disp('Scaling factors:');
+% disp(scaling_factors);
+% %% scale the elec to MRI?
+% elec_unaligned.elecpos = ...
+%     elec_unaligned.elecpos./scaling_factors;
+% elec_unaligned.chanpos = elec_unaligned.elecpos;
 %% now we can align based on the fiducial positions
-
 elec_mri.elecpos = [
   nas
   lpa
   rpa
   ];
-elec_mri.label = {'NA', 'LPA', 'RPA'};
+elec_mri.label = {'nas', 'lpa', 'rpa'};
 elec_mri.unit  = 'mm';
-
+elec_unaligned.label(1:3) = elec_mri.label(1:3)
 % coregister the electrodes to the MRI using fiducials
 cfg = [];
+cfg.target.label    = {'nas', 'lpa', 'rpa'}
 cfg.method   = 'fiducial';
 cfg.template = elec_mri;
 cfg.elec     = elec_unaligned;
 cfg.feedback = 'yes';
-cfg.fiducial = {'NA', 'LPA', 'RPA'};
+cfg.fiducial = {'nas', 'lpa', 'rpa'};
 %red before /magenta after /blue mri reference
 elec_aligned = ft_electroderealign(cfg);
+%%
+%%
+% alternative
+% interactively coregister the electrodes to the BEM head model
+% this is a visual check and refinement step
+cfg = [];
+cfg.method    = 'interactive';
+cfg.elec      = elec_aligned;
+cfg.headshape = hdm.bnd(1);
+elec_new = ft_electroderealign(cfg);
+
 
 
 %% plot together
@@ -203,27 +216,19 @@ figure;
 ft_plot_mesh(hdm.bnd,'facecolor','none'); 
 
 hold on;
-ft_plot_sens(elec_aligned, 'facecolor', [0 1 0], 'edgecolor', [1 0 0]);
+ft_plot_sens(elec_new, 'facecolor', [0 1 0], 'edgecolor', [1 0 0]);
 
-elec_fin = elec_aligned;
-elec_fin.label = elec_aligned.label(...
-    (ismember(elec_aligned.label, hdr.label)));
-elec_fin.elecpos     = elec_aligned.elecpos(...
-    (ismember(elec_aligned.label, hdr.label)),:);
+elec_fin = elec_new;
+elec_fin.label = elec_new.label(...
+    (ismember(elec_new.label, hdr.label)));
+elec_fin.elecpos     = elec_new.elecpos(...
+    (ismember(elec_new.label, hdr.label)),:);
 elec_fin.chanpos = elec_fin.elecpos;
-elec_fin.chantype     = elec_aligned.chantype(...
-    (ismember(elec_aligned.label, hdr.label)));
-elec_fin.chanunit     = elec_aligned.chanunit(...
-    (ismember(elec_aligned.label, hdr.label)));
-%%
-% alternative
-% % interactively coregister the electrodes to the BEM head model
-% % this is a visual check and refinement step
-% cfg = [];
-% cfg.method    = 'interactive';
-% cfg.elec      = elec_aligned;
-% cfg.headshape = hdm.bnd(1);
-% elec_new = ft_electroderealign(cfg);
+elec_fin.chantype     = elec_new.chantype(...
+    (ismember(elec_new.label, hdr.label)));
+elec_fin.chanunit     = elec_new.chanunit(...
+    (ismember(elec_new.label, hdr.label)));
+
 
 % alternative: align mri to electrodes
 % elec_unaligned.pos = elec_unaligned.elecpos;
