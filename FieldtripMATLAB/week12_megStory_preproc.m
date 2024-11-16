@@ -136,21 +136,18 @@ cfg.numcomponent= rnk;
 % cfg.topolabel = data_nan.label;
 data_comp = ft_componentanalysis(cfg, data_nan);
 
-%% add eye channels to layout
+% unmixing = data_comp.unmixing;
+% save the unmixing
+% save(fullfile(derivPath, [saveRoot 'unmixing.mat']), 'unmixing', '-v7.3');
 
-% add eye positions to layout
-layeye = lay;
-layeye.label = [lay.label; {'EOG-1'; 'EOG-2'; 'EOG-3'; 'EOG-4'}];
-% layeye.pos = [lay.pos; [-0.4 0.28]; [-0.2  0.4]; [0.2 0.4]; [0.4 0.28]]; % Example positions
-layeye.pos = [lay.pos; [-0.49 0.49]; [-0.48 0.48];  [0.48 0.48]; [0.49 0.49]]; % Example positions
+%% prepare the standard layout (we can do this from elec too but need to adjust scale and rotation)
+cfg = [];
+cfg.feedback = 'yes';
+lay = ft_prepare_layout(cfg, data_nan);
 
-layeye.width = [lay.width;ones(4, 1).*lay.width(1)];
-layeye.height = [lay.width;ones(4, 1).*lay.width(1)];
-cfg = []; cfg.layout = layeye;
-ft_layoutplot(cfg)
 %%
 cfg = [];
-cfg.layout = layeye;
+cfg.layout = lay;
 % cfg.preproc.hpfilter = 'yes';
 % cfg.preproc.hpfreq = 0.5;
 
@@ -160,87 +157,31 @@ ft_databrowser(cfg, data_comp);
 
 %% reject components:
 cfg           = [];
-cfg.component = [1 3 10, 13];
+cfg.component = [1 2 10, 12];
 data_clean    = ft_rejectcomponent(cfg,data_comp, ...
-    data_combined);
+    data_interp);
 
-% save(fullfile(derivPath, [saveRoot '_cleaned.mat']), 'data_clean', '-v7.3');
+% save(fullfile(derivPath, [saveRoot 'cleaned.mat']), 'data_clean', '-v7.3');
 %% 
 cfg = [];
-cfg.layout = layeye;
-cfg.viewmode = 'vertical';
+cfg.layout = lay;
 cfg.viewmode = 'vertical';
 cfg.preproc.hpfilter = 'yes';
-cfg.preproc.hpfreq = 0.5;
+cfg.preproc.hpfreq = 1;
 cfg.ylim = [-10 10];
 ft_databrowser(cfg, data_clean)
 
-%% read in trigger info
-event_info = ...
-    readtable(...
-    fullfile(dataPath,...
-    ['sub-' subjCode '_task-oddball_events.tsv']), 'FileType', 'text');
-n_events = size(event_info,1);
-
-sum(event_info.trialNumber ~=0)
-n_trials = sum(event_info.trialNumber ~=0 & ...
-    event_info.value_fixed ~=16 ) ;
-samp = nan(n_trials, 1);
-info = cell(n_trials,1);
-inf.group = '';
-inf.type = '';
-trial_idx = 0;
-
-for ee = 1: n_events
-    switch event_info.value_fixed(ee)
-        case 1
-            inf.group = 'tone';
-        case 2
-            inf.group = 'vis';
-        case 4
-            inf.group = 'aud';
-        case 8
-            inf.group = 'story_start';
-        case 16
-            inf.group = 'story_seg';
-        case 64
-            trial_idx = trial_idx+1;
-            samp(trial_idx) =  ...
-                event_info.sampleOnset(ee);
-
-            info{trial_idx} = inf;
-            info{trial_idx}.blockType = ...
-                event_info.blockTypeActual(ee);
-            info{trial_idx}.trialnumber = ...
-                event_info.trialNumber(ee);
-            info{trial_idx}.sampleinfo = ...
-                event_info.sampleOnset(ee);
-            info{trial_idx}.type  = 'even';
-            info{trial_idx}.blocknumber = ...
-                event_info.blockNumber(ee);
-            info{trial_idx}.trigger =  ...
-               event_info.value_fixed(ee);
-        case 128
-            trial_idx = trial_idx+1;
-            samp(trial_idx) =  ...
-                event_info.sampleOnset(ee);
-            info{trial_idx} = inf;
-            info{trial_idx}.blockType = ...
-                event_info.blockTypeActual(ee);
-            info{trial_idx}.trialnumber = ...
-                event_info.trialNumber(ee);
-            info{trial_idx}.sampleinfo = ...
-                event_info.sampleOnset(ee);
-            info{trial_idx}.type  = 'odd';
-            info{trial_idx}.blocknumber = ...
-                event_info.blockNumber(ee);
-            info{trial_idx}.trigger =  ...
-                event_info.value_fixed(ee);
-            
-    end
-
-end
  
+%% Read events
+cfg = [];
+cfg.dataset = fullfile(dataPath, ...
+                       ['sub-' subjCode '_task-' taskName '_eventmodel.sqd']);
+events = ft_read_event(cfg.dataset, ...
+    'chanindx', 161:166, ...
+    'threshold', 1e4, ...
+    'detectflank', 'up');
+
+
 %% Epoch storySegments
 cfg = [];
 cfg.trials = find(...

@@ -282,6 +282,7 @@ n_events = size(event_info,1);
 sum(event_info.trialNumber ~=0)
 n_trials = sum(event_info.trialNumber ~=0 & ...
     event_info.value_fixed ~=16 ) ;
+n_trials = sum(event_info.trialNumber ~=0) ;
 samp = nan(n_trials, 1);
 info = cell(n_trials,1);
 inf.group = '';
@@ -299,7 +300,26 @@ for ee = 1: n_events
         case 8
             inf.group = 'story_start';
         case 16
-            inf.group = 'story_seg';
+%             inf.group = 'story_seg';
+            trial_idx = trial_idx+1;
+            samp(trial_idx) =  ...
+                event_info.sampleOnset(ee);
+
+            info{trial_idx} = inf;
+            info{trial_idx}.blockType = ...
+                event_info.blockTypeActual(ee);
+            info{trial_idx}.trialnumber = ...
+                event_info.trialNumber(ee);
+            info{trial_idx}.sampleinfo = ...
+                event_info.sampleOnset(ee);
+            info{trial_idx}.type  = 'story_seg';
+            info{trial_idx}.blocknumber = ...
+                event_info.blockNumber(ee);
+            info{trial_idx}.trigger =  ...
+               event_info.value_fixed(ee);
+            info{trial_idx}.stimulus_duration =  ...
+                event_info.stimulusDuration(ee);
+
         case 64
             trial_idx = trial_idx+1;
             samp(trial_idx) =  ...
@@ -317,6 +337,8 @@ for ee = 1: n_events
                 event_info.blockNumber(ee);
             info{trial_idx}.trigger =  ...
                event_info.value_fixed(ee);
+            info{trial_idx}.stimulus_duration = ...
+                event_info.stimulusDuration(ee);
         case 128
             trial_idx = trial_idx+1;
             samp(trial_idx) =  ...
@@ -333,17 +355,41 @@ for ee = 1: n_events
                 event_info.blockNumber(ee);
             info{trial_idx}.trigger =  ...
                 event_info.value_fixed(ee);
+            info{trial_idx}.stimulus_duration = ...
+                event_info.stimulusDuration(ee);
             
     end
 
 end
  
 %% Epoch storySegments
-cfg = [];
-cfg.trials = find(...
-    cellfun(@(x) ...
-    strcmp('story_start', string(x.group)), ...
-    data_clean.trialinfo));
+data_clean.trialinfo = info;
 
-tl_vis = ft_timelockanalysis(cfg, data_bl);
+story_trials = find(cellfun(@(x) strcmp('story_start', x.group), data_clean.trialinfo));
+
+story1 = story_trials(1:8);
+story2 = story_trials(9:16);
+
+Fs = data_clean.fsample;
+% First 8 trials
+start_first = min(cellfun(@(x) x.sampleinfo, data_clean.trialinfo(story1))) - (4 * Fs);
+end_first = max(cellfun(@(x) x.sampleinfo + round(x.stimulus_duration * Fs), data_clean.trialinfo(story1))) + (5 * Fs);
+% Last 8 trials
+start_second = min(cellfun(@(x) x.sampleinfo, data_clean.trialinfo(story2))) - (4 * Fs);
+end_second = max(cellfun(@(x) x.sampleinfo + round(x.stimulus_duration * Fs), data_clean.trialinfo(story2))) + (5 * Fs);
+
+
+cfg = [];
+cfg.trl = [
+    start_first, end_first, 0;  % First 8 trials as one trial
+    start_second, end_second, 0 % Last 8 trials as another trial
+];
+
+data_story_combined = ft_redefinetrial(cfg, data_clean);
+
+cfg = [];
+epochStory = ft_timelockanalysis(cfg, data_story_combined);
+
+% save(fullfile(derivPath, [saveRoot 'epochedStory.mat']), 'epochStory', '-v7.3');
+
 
