@@ -171,23 +171,25 @@ cfg.preproc.hpfreq = 1;
 cfg.ylim = [-10 10];
 ft_databrowser(cfg, data_clean)
 
- 
-%% Read events
+
+trigger_channel = data_raw.trial{1}(165, :);
+trigger_channel_new = zeros(size(trigger_channel));
+trigger_channel_new(2:end) = trigger_channel(1:end-1) - trigger_channel(2:end);
+trigger_samples = find(trigger_channel_new > 0);
+
+% trigger_timepoints = data_raw.time{1}(trigger_samples)
+
+trl_mat = [818142-4*data_clean.hdr.Fs 1530783+round(92.7929*data_clean.hdr.Fs) -4*data_clean.hdr.Fs;
+            3153926-4*data_clean.hdr.Fs 3866545+round(92.7929*data_clean.hdr.Fs) -4*data_clean.hdr.Fs];
+
 cfg = [];
-cfg.dataset = fullfile(dataPath, ...
-                       ['sub-' subjCode '_task-' taskName '_eventmodel.sqd']);
-events = ft_read_event(cfg.dataset, ...
-    'chanindx', 161:166, ...
-    'threshold', 1e4, ...
-    'detectflank', 'up');
+cfg.trl = trl_mat;
+epochStory = ft_redefinetrial(cfg, data_clean);
 
 
-%% Epoch storySegments
 cfg = [];
-cfg.trials = find(...
-    cellfun(@(x) ...
-    strcmp('story_start', string(x.group)), ...
-    data_clean.trialinfo));
-
-tl_vis = ft_timelockanalysis(cfg, data_bl);
+cfg.keeptrials = 'yes';
+cfg.latency = 'minperiod';
+epochStory = ft_timelockanalysis(cfg, epochStory);
+% save(fullfile(derivPath, [saveRoot 'epochedStory.mat']), 'epochStory', '-v7.3');
 

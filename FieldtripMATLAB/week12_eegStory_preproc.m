@@ -381,14 +381,16 @@ end_second = max(cellfun(@(x) x.sampleinfo + round(x.stimulus_duration * Fs), da
 
 cfg = [];
 cfg.trl = [
-    start_first, end_first, 0;  % First 8 trials as one trial
-    start_second, end_second, 0 % Last 8 trials as another trial
+    start_first, end_first,  -(4 * Fs);  % First 8 trials as one trial
+    start_second, end_second, -(4 * Fs) % Last 8 trials as another trial
 ];
 
-data_story_combined = ft_redefinetrial(cfg, data_clean);
-
+epochStory = ft_redefinetrial(cfg, data_clean);
+% 
 cfg = [];
-epochStory = ft_timelockanalysis(cfg, data_story_combined);
+cfg.keeptrials = 'yes';
+cfg.latency = 'minperiod';
+epochStory = ft_timelockanalysis(cfg, epochStory);
 
 % save(fullfile(derivPath, [saveRoot 'epochedStory.mat']), 'epochStory', '-v7.3');
 
