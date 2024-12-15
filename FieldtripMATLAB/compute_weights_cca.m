@@ -4,8 +4,8 @@ function [w_x, w_y,r] = compute_weights_cca(C_xx,C_yy,C_xy,f, gamma)
 %@Cxy covariance matrix between data at time X and y
 
 % computes the weights w_x and w_y for Dimension f such that w_x*Data_x is maximally
-% correlated with Data_y * w_y, while keeping the correlation between
-% w_x*Data_Shuffled and Data_y*w_y at zero.
+% correlated with Data_y * w_y
+
 if nargin>4
     I = eye(size(C_xx,1));
     C_xx = (1-gamma)* C_xx + gamma*I*trace(C_xx);
